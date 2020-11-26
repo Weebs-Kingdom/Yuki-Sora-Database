@@ -93,8 +93,11 @@ router.post("/newMonster", verify, async(req, res) => {
 });
 
 router.post("/newItem", verify, async(req, res) => {
+    var itemName = req.body.itemName;
+    console.log("this is a " + itemName + " from request: " + req.body);
+
     const cItem = new Item({
-        itemName: req.body.itemName,
+        itemName: itemName,
         itemRarity: req.body.itemRarity,
         itemImageURL: req.body.itemImageURL,
         itemDescription: req.body.itemDescription,
