@@ -85,8 +85,8 @@ router.post("/getUserMonsters", verify, async(req, res) => {
 router.post("/userItem", verify, async(req, res) => {
     const si = req.body.item;
     const amount = req.body.amount;
-    const item;
-    const user;
+    var item;
+    var user;
     try {
         item = await Item.findById(si);
     } catch (err) {
