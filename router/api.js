@@ -92,7 +92,7 @@ router.post("/userItem", verify, async(req, res) => {
     if (!item)
         return res.status(400).json({ status: 400, message: "Item not found!" });
 
-    const storage = await ItemUserCon.findOne({ itemKY: item._id, userKY: user._id });
+    const st = await ItemUserCon.findOne({ itemKY: item._id, userKY: user._id });
 
     const storage = new ItemUserCon({
         itemKY: item._id,
