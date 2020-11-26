@@ -28,7 +28,8 @@ router.post("/fight", verify, async(req, res) => {
 
 router.post("/getUserByDID", verify, async(req, res) => {
     const s = req.body.id;
-    const user = await User.findOne({ userID: s });
+
+    const user = getUserFromDID(s);
     if (user) return res.status(400).json({ status: 400, message: "User not found!" });
     //maybe to this in more specific json text yk...
     res.status(200).json({ status: "200", data: [user] });
@@ -36,7 +37,8 @@ router.post("/getUserByDID", verify, async(req, res) => {
 
 router.post("/getUserInventoryByDID", verify, async(req, res) => {
     const s = req.body.id;
-    var inventory = await ItemUserCon.find({ user: { userID: s } });
+    const user = getUserFromDID(s);
+    var inventory = await ItemUserCon.find({ user: user._id });
     if (inventory) return res.status(400).json({ status: 400, message: "Inventory not found!" });
     var returningString = "{status: \"200\", data: [";
     var first = true;
@@ -54,7 +56,8 @@ router.post("/getUserInventoryByDID", verify, async(req, res) => {
 
 router.post("/getUserMonstersByDID", verify, async(req, res) => {
     const s = req.body.id;
-    var monsters = await UserMonster.find({ user: { userID: s } });
+    const user = getUserFromDID(s);
+    var monsters = await UserMonster.find({ user: user._id });
     if (monsters) return res.status(400).json({ status: 400, message: "Monster not found!" });
     var returningString = "{status: \"200\", data: [";
     var first = true;
@@ -70,7 +73,27 @@ router.post("/getUserMonstersByDID", verify, async(req, res) => {
     res.status(200).json(returningString);
 });
 
-router.post("/newUser", verify, async(req, res) => {
+router.post("/userItem", verify, async(req, res) => {
+    const s = req.body.id;
+    const si = req.body.item;
+    const amount = req.body.amount;
+    const item = Item.findById(si);
+    const user = getUserFromDID(s);
+    const storage = new ItemUserCon({
+        item: si._id,
+        user: user._id,
+        amount: amount
+    });
+    try {
+        const savedItem = await storage.save();
+        res.status(200).json({ status: 200, message: savedItem._id });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({ status: 400, message: "error while creating new user!", error: err });
+    }
+});
+
+router.post("/user", verify, async(req, res) => {
     const cUser = new User(req.body);
     try {
         const savedUser = await cUser.save();
@@ -81,7 +104,27 @@ router.post("/newUser", verify, async(req, res) => {
     }
 });
 
-router.post("/newMonster", verify, async(req, res) => {
+router.patch("/user", verify, async(req, res) => {
+    try {
+        const savedUser = await User.update({ _id: req.body._id }, (req.body.data));
+        res.status(200).json({ status: 200, message: savedUser._id });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({ status: 400, message: "error while patching new user!", error: err });
+    }
+});
+
+router.delete("/user", verify, async(req, res) => {
+    try {
+        const savedUser = await User.remove({ _id: req.body._id });
+        res.status(200).json({ status: 200, message: "removed" });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({ status: 400, message: "error while deleting user!", error: err });
+    }
+});
+
+router.post("/monster", verify, async(req, res) => {
     const cMonster = new Monster(req.body);
     try {
         const savedMonster = await cMonster.save();
@@ -92,10 +135,27 @@ router.post("/newMonster", verify, async(req, res) => {
     }
 });
 
-router.post("/newItem", verify, async(req, res) => {
-    var itemName = req.body.itemName;
-    console.log("this is a " + itemName + " item from request: " + req.body);
+router.patch("/monster", verify, async(req, res) => {
+    try {
+        const savedMonster = await Monster.update({ _id: req.body._id }, (req.body.data));
+        res.status(200).json({ status: 200, message: savedMonster._id });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({ status: 400, message: "error while patching new monster!", error: err });
+    }
+});
 
+router.delete("/monster", verify, async(req, res) => {
+    try {
+        const savedMonster = await Monster.remove({ _id: req.body._id });
+        res.status(200).json({ status: 200, message: "removed" });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({ status: 400, message: "error while deleting monster!", error: err });
+    }
+});
+
+router.post("/item", verify, async(req, res) => {
     const cItem = new Item(req.body);
     try {
         const savedItem = await cItem.save();
@@ -105,5 +165,33 @@ router.post("/newItem", verify, async(req, res) => {
         res.status(400).json({ status: 400, message: "error while creating new item!", error: err });
     }
 });
+
+router.patch("/item", verify, async(req, res) => {
+    try {
+        const cItem = await Item.update({ _id: req.body._id }, (req.body.data));
+        res.status(200).json({ status: 200, message: savedItem._id });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({ status: 400, message: "error while patching new item!", error: err });
+    }
+});
+
+router.delete("/item", verify, async(req, res) => {
+    try {
+        const cItem = await Item.remove({ _id: req.body._id });
+        res.status(200).json({ status: 200, message: "removed" });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({ status: 400, message: "error while deleting item!", error: err });
+    }
+});
+
+async function getUserFromDID(did) {
+    return await User.findOne({ userID: did });
+}
+
+async function getUserDidFromId(id) {
+    return await User.findOne({ _id: id }).userID;
+}
 
 module.exports = router;
