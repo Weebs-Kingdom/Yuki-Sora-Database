@@ -96,7 +96,17 @@ router.post("/userItem", verify, async(req, res) => {
     var st = await ItemUserCon.findOne({ itemKY: item._id, userKY: user._id });
     if (st) {
         st.amount += amount;
-        const storage = await st.save();
+        try {
+            const storage = await st.save();
+            res.status(200).json({ status: 200, message: storage._id });
+        } catch (err) {
+            console.log("an error occured! " + err);
+            res.status(400).json({
+                status: 400,
+                message: "error while creating new user!",
+                error: err,
+            });
+        }
     } else {
         const storage = new ItemUserCon({
             itemKY: item._id,
