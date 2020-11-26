@@ -93,7 +93,14 @@ router.post("/newMonster", verify, async(req, res) => {
 });
 
 router.post("/newItem", verify, async(req, res) => {
-    const cItem = new Item(req.body);
+    const cItem = new Item({
+        itemName: req.body.itemName,
+        itemRarity: req.body.itemRarity,
+        itemImageURL: req.body.itemImageURL,
+        itemDescription: req.body.itemDescription,
+        isItemCookable: req.body.isItemCookable,
+        cooksInto: req.body.cooksInto
+    });
     try {
         const savedItem = await cItem.save();
         res.status(200).json({ status: 200, message: savedItem._id });
