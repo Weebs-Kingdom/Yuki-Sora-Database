@@ -123,7 +123,7 @@ router.post("/userItem", verify, async(req, res) => {
                 .status(400)
                 .json({ status: 400, message: "Can't have negative amount of items" });
 
-        if (st.amount == 0)
+        if (amount == 0)
             return res
                 .status(400)
                 .json({ status: 400, message: "Zero items will not be saved!" });
