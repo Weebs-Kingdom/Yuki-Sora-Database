@@ -93,8 +93,8 @@ router.post("/userItem", verify, async(req, res) => {
         return res.status(400).json({ status: 400, message: "Item not found!" });
 
     const storage = new ItemUserCon({
-        item: si._id,
-        user: user._id,
+        itemKY: si._id,
+        userKY: user._id,
         amount: amount
     });
 
