@@ -95,7 +95,7 @@ router.post("/newMonster", verify, async(req, res) => {
 router.post("/newItem", verify, async(req, res) => {
     const cItem = new Item(req.body);
     try {
-        const savedItem = await cMonster.save();
+        const savedItem = await cItem.save();
         res.status(200).json({ status: 200, message: savedItem._id });
     } catch (err) {
         console.log("an error occured! " + err);
