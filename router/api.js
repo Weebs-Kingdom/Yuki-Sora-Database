@@ -96,6 +96,14 @@ router.post("/userItem", verify, async(req, res) => {
     var st = await ItemUserCon.findOne({ itemKY: item._id, userKY: user._id });
     if (st) {
         st.amount += amount;
+        if (st.amount < 0)
+            return res
+                .status(400)
+                .json({ status: 400, message: "Can't have negative amount of items" });
+
+        if (st.amount == 0)
+            st.remove();
+
         try {
             const storage = await st.save();
             res.status(200).json({ status: 200, message: storage._id });
@@ -111,7 +119,7 @@ router.post("/userItem", verify, async(req, res) => {
         const storage = new ItemUserCon({
             itemKY: item._id,
             userKY: user._id,
-            amount: amount
+            amount: amount,
         });
 
         try {
