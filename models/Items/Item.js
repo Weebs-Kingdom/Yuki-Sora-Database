@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const ItemUserCon = require("./ItemUserCon");
 
 const userSchema = new mongoose.Schema({
     itemName: String,

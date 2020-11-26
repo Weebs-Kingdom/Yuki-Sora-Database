@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Attack = require("./Attack");
 
 const userSchema = new mongoose.Schema({
     name: String,

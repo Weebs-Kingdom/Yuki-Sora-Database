@@ -1,8 +1,4 @@
 const mongoose = require("mongoose");
-const User = require("../User/User");
-const Attack = require("./Attack");
-const Monster = require("./Monster");
-const MonsterEvolveCon = require("./MonsterEvolveCon");
 
 const userSchema = new mongoose.Schema({
     rootMonster: Monster,

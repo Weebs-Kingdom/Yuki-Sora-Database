@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Job = require("./Job");
 
 const userSchema = new mongoose.Schema({
     jobXP: Number,
