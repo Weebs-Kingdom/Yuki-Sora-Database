@@ -101,8 +101,10 @@ router.post("/userItem", verify, async(req, res) => {
                 .status(400)
                 .json({ status: 400, message: "Can't have negative amount of items" });
 
-        if (st.amount == 0)
+        if (st.amount == 0) {
             st.remove();
+            res.status(200).json({ status: 200, message: "removed record, its empty" });
+        }
 
         try {
             const storage = await st.save();
@@ -116,6 +118,16 @@ router.post("/userItem", verify, async(req, res) => {
             });
         }
     } else {
+        if (amount < 0)
+            return res
+                .status(400)
+                .json({ status: 400, message: "Can't have negative amount of items" });
+
+        if (st.amount == 0)
+            return res
+                .status(400)
+                .json({ status: 400, message: "Zero items will not be saved!" });
+
         const storage = new ItemUserCon({
             itemKY: item._id,
             userKY: user._id,
