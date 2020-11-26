@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const auth = require("./api");
+const api = require("./api");
 
-router.use("/api/yuki", auth);
+router.use("/api/yuki", api);
 
 module.exports = router;

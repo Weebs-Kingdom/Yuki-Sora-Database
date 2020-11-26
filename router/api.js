@@ -12,7 +12,7 @@ const verify = require("../middleware/verifyApiToken");
 
 //create ai monster usw.
 router.post("/createFight", verify, async(req, res) => {
-
+    res.status(200).json({ message: "test looolz UWU OWO :P" });
 });
 
 //every fight step, just calculation
@@ -76,6 +76,7 @@ router.post("/newUser", verify, async(req, res) => {
         const savedUser = await cUser.save();
         res.status(200).json({ status: 200, message: savedUser._id });
     } catch (err) {
+        console.log("an error occured! " + err);
         res.status(400).json({ status: 400, message: "error while creating new user!", error: err });
     }
 });
@@ -86,6 +87,7 @@ router.post("/newMonster", verify, async(req, res) => {
         const savedMonster = await cMonster.save();
         res.status(200).json({ status: 200, message: savedMonster._id });
     } catch (err) {
+        console.log("an error occured! " + err);
         res.status(400).json({ status: 400, message: "error while creating new monster!", error: err });
     }
 });
@@ -96,6 +98,7 @@ router.post("/newItem", verify, async(req, res) => {
         const savedItem = await cMonster.save();
         res.status(200).json({ status: 200, message: savedItem._id });
     } catch (err) {
+        console.log("an error occured! " + err);
         res.status(400).json({ status: 400, message: "error while creating new item!", error: err });
     }
 });
