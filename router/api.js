@@ -85,15 +85,16 @@ router.post("/getUserMonstersByDID", verify, async(req, res) => {
 router.post("/userItem", verify, async(req, res) => {
     const si = req.body.item;
     const amount = req.body.amount;
-    const item = Item.findById(si);
+    const item = await Item.findById(si);
     const user = getUser(req.body);
+    console.log("user " + user + " item " + item + " am " + amount);
     if (!user)
         return res.status(400).json({ status: 400, message: "User not found!" });
     if (!item)
         return res.status(400).json({ status: 400, message: "Item not found!" });
 
     const storage = new ItemUserCon({
-        itemKY: si._id,
+        itemKY: item._id,
         userKY: user._id,
         amount: amount
     });
