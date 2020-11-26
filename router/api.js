@@ -19,195 +19,84 @@ router.post("/fight", verify, async(req, res) => {
     const m1 = req.body.monster;
     const dmg = req.body.dmg;
     var monster1 = await UserMonster.findById(m1);
+    if (monster1) return res.status(400).json({ status: 400, message: "Monster not found!" });
     monster1.hp = monster1.hp - dmg;
     monster1 = await monster1.save();
-    res.status(200).json({ monster: monster1, status: "200" })
+    res.status(200).json({ status: "200", data: [monster1] })
 });
 
 router.post("/getUserByDID", verify, async(req, res) => {
     const s = req.body.id;
     const user = await User.findOne({ userID: s });
+    if (user) return res.status(400).json({ status: 400, message: "User not found!" });
     //maybe to this in more specific json text yk...
-    res.status(200).json({ user: user, status: "200" });
+    res.status(200).json({ status: "200", data: [user] });
 });
 
 router.post("/getUserInventoryByDID", verify, async(req, res) => {
+    const s = req.body.id;
+    var inventory = await ItemUserCon.find({ user: { userID: s } });
+    if (inventory) return res.status(400).json({ status: 400, message: "Inventory not found!" });
+    var returningString = "{status: \"200\", data: [";
+    var first = true;
+    inventory.forEach(element => {
+        if (!first)
+            returningString += ",";
+        else
+            first = false;
 
+        returningString += "{item: " + element.item + ", amount: " + element.amount + "}";
+    });
+    returningString += "]}";
+    res.status(200).json(returningString);
 });
 
 router.post("/getUserMonstersByDID", verify, async(req, res) => {
     const s = req.body.id;
-    const user = await UserMonster.find({ user: { userID: s } });
+    var monsters = await UserMonster.find({ user: { userID: s } });
+    if (monsters) return res.status(400).json({ status: 400, message: "Monster not found!" });
+    var returningString = "{status: \"200\", data: [";
+    var first = true;
+    monsters.forEach(element => {
+        if (!first)
+            returningString += ",";
+        else
+            first = false;
 
-});
-
-router.post("/password", verify, async(req, res) => {
-    const { error } = editPasswordSch.validate(req.body);
-    if (error) return res.status(400).json({ status: 400, message: error.details[0].message });
-    try {
-        const user = req.user._id;
-        const hashPassword = await hashPw(req.body.password);
-        req.dbUser.password = hashPassword;
-        await req.dbUser.save();
-        res.status(200).json({ status: 200, message: "did it!" });
-    } catch (e) {
-        res.status(400).json({ status: 400, message: e });
-    }
-});
-
-router.post("/username", verify, async(req, res) => {
-    const { error } = nameSch.validate(req.body.username);
-    if (error) return res.status(400).json({ status: 400, message: error.details[0].message });
-    try {
-        const name = req.body.username;
-        req.dbUser.name = name;
-        await req.dbUser.save();
-        res.status(200).json({ status: 200, message: "did it!" });
-    } catch (e) {
-        res.status(400).json({ status: 400, message: e });
-    }
-});
-
-router.post("/email", verify, async(req, res) => {
-    const { error } = emailSch.validate(req.body.email);
-    if (error) return res.status(400).json({ status: 400, message: error.details[0].message });
-    try {
-        const email = req.body.email.toLowerCase();
-        req.dbUser.email = email;
-        await req.dbUser.save();
-        res.status(200).json({ status: 200, message: "did it!" });
-    } catch (e) {
-        res.status(400).json({ status: 400, message: e });
-    }
-});
-
-
-router.post("/register", async(req, res) => {
-    const { error } = regSchema.validate(req.body);
-    if (error) return res.status(400).json({ status: 400, message: error.details[0].message });
-
-    const token = req.body.access_token;
-    const tk = await Tokens.findOne({ token: token });
-    if (!tk) return res.status(400).json({ status: 400, message: "Token not found!" });
-
-    if (tk.used >= tk.maxUse) {
-        tk.remove();
-        res.status(400).json({ status: 400, message: "Token expired!" });
-        return;
-    }
-
-    if (tk.used + 1 >= tk.maxUse) tk.remove();
-    else {
-        tk.used = tk.used + 1;
-        tk.save();
-    }
-
-    //Check if the user is already in the database
-    const emailExists = await User.findOne({ email: req.body.email.toLowerCase() });
-    if (emailExists) return res.status(400).json({ status: 400, message: "Email already registred!" });
-
-    //Hashing password
-    const hashPassword = await hashPw(req.body.password);
-
-    //Create new user
-    const cUser = new User({
-        name: req.body.username,
-        email: req.body.email.toLowerCase(),
-        password: hashPassword
+        returningString += "{monster: " + element + "}";
     });
+    returningString += "]}";
+    res.status(200).json(returningString);
+});
+
+router.post("/newUser", verify, async(req, res) => {
+    const cUser = new User(req.body);
     try {
         const savedUser = await cUser.save();
         res.status(200).json({ status: 200, message: savedUser._id });
     } catch (err) {
         res.status(400).json({ status: 400, message: "error while creating new user!", error: err });
     }
-
 });
 
-router.post("/login", async(req, res) => {
-    const { error } = loginSchema.validate(req.body);
-    if (error) return res.status(400).json({ status: 400, message: error.details[0].message });
-
-    //Check if the user is in db
-    const user = await User.findOne({ email: req.body.email });
-    if (!user) return res.status(400).json({ status: 400, message: "Email or password is wrong!" });
-
-    //Check if password is correct
-    const validPass = await bcrypt.compare(req.body.password, user.password);
-    if (!validPass) return res.status(400).json({ status: 400, message: "Email or password is wrong" });
-
-    //Create and assing a token
-    const time = new Date();
-    const token = jwt.sign({ _id: user._id, ctime: time }, process.env.TOKEN_SECRET);
-    res.header("auth-token", token).json({ status: 200, message: token });
-});
-
-router.get("/auth", verify, async(req, res) => {
-    res.status(200).json({ status: 200, message: "Authenticated!" });
-});
-
-router.post("/genToken", verify, vAdmin, async(req, res) => {
-    console.log("called");
-    var maxUse = req.body.maxUse;
-    if (!maxUse) {
-        maxUse = 1;
-    } else if (maxUse == 0) {
-        maxUse = 1;
-    }
-
-    var token;
-    console.log("we've got this far");
-    var doItAgain = true;
-    while (true) {
-        token = makeToken(6);
-        console.log("we've got this far and have a token named " + token);
-        if (Tokens.findOne({ token: token }).token != token) break;
-    }
-
-    console.log("have a token " + token);
-
-    const cToken = new Tokens({
-        token: token,
-        maxUse: maxUse
-    });
-    console.log("a object");
-
+router.post("/newMonster", verify, async(req, res) => {
+    const cMonster = new Monster(req.body);
     try {
-        const savedToken = await cToken.save();
-        console.log("saved");
-        res.status(200).json({ status: 200, message: savedToken.token });
-    } catch (er) {
-        res.status(400).json({ status: 400, message: "Error while creating new token!", error: err });
+        const savedMonster = await cMonster.save();
+        res.status(200).json({ status: 200, message: savedMonster._id });
+    } catch (err) {
+        res.status(400).json({ status: 400, message: "error while creating new monster!", error: err });
     }
 });
 
-router.get("/name", verify, async(req, res) => {
-    res.status(200).json({ status: 200, message: req.dbUser.name });
-});
-
-router.get("/email", verify, async(req, res) => {
-    res.status(200).json({ status: 200, message: req.dbUser.email });
-});
-
-router.get("/isAdmin", verify, vAdmin, async(req, res) => {
-    res.status(200).json({ status: 200, message: req.dbUser.admin });
-});
-
-async function hashPw(pw) {
-    const salt = await bcrypt.genSalt(10);
-    const hashPassword = await bcrypt.hash(pw, salt);
-    return hashPassword;
-}
-
-function makeToken(length) {
-    var result = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+router.post("/newItem", verify, async(req, res) => {
+    const cItem = new Item(req.body);
+    try {
+        const savedItem = await cMonster.save();
+        res.status(200).json({ status: 200, message: savedItem._id });
+    } catch (err) {
+        res.status(400).json({ status: 400, message: "error while creating new item!", error: err });
     }
-    return result;
-}
-
+});
 
 module.exports = router;
