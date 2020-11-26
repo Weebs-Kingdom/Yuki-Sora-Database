@@ -6,10 +6,10 @@ const MonsterEvolveCon = require("./MonsterEvolveCon");
 
 const userSchema = new mongoose.Schema({
     rootMonster: Monster,
-    a1: Schema.Types.ObjectId,
-    a2: Schema.Types.ObjectId,
-    a3: Schema.Types.ObjectId,
-    a4: Schema.Types.ObjectId,
+    a1: mongoose.Schema.Types.ObjectId,
+    a2: mongoose.Schema.Types.ObjectId,
+    a3: mongoose.Schema.Types.ObjectId,
+    a4: mongoose.Schema.Types.ObjectId,
     level: Number,
     xp: Number,
     dv: Number,
@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
     hp: Number,
     maxHp: Number,
     evolveDirection: String,
-    user: Schema.Types.ObjectId
+    user: mongoose.Schema.Types.ObjectId
 });
 
 module.exports = mongoose.model("UserMonster", userSchema);
