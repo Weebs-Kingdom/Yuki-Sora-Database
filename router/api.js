@@ -41,7 +41,7 @@ router.post("/getUser", verify, async(req, res) => {
     res.status(200).json({ status: "200", data: user });
 });
 
-router.post("/getUserInventoryByDID", verify, async(req, res) => {
+router.post("/getUserInventory", verify, async(req, res) => {
     const user = await getUser(req.body);
     if (!user)
         return res.status(400).json({ status: 400, message: "User not found!" });
@@ -63,7 +63,7 @@ router.post("/getUserInventoryByDID", verify, async(req, res) => {
     res.status(200).json(returningString);
 });
 
-router.post("/getUserMonstersByDID", verify, async(req, res) => {
+router.post("/getUserMonsters", verify, async(req, res) => {
     const user = await getUser(req.body);
     if (!user)
         return res.status(400).json({ status: 400, message: "User not found!" });
@@ -85,8 +85,14 @@ router.post("/getUserMonstersByDID", verify, async(req, res) => {
 router.post("/userItem", verify, async(req, res) => {
     const si = req.body.item;
     const amount = req.body.amount;
-    const item = await Item.findById(si);
-    const user = await getUser(req.body);
+    const item;
+    const user;
+    try {
+        item = await Item.findById(si);
+    } catch (err) {
+        return res.status(400).json({ status: 400, message: "Item not found!" });
+    }
+    user = await getUser(req.body);
     if (!user)
         return res.status(400).json({ status: 400, message: "User not found!" });
     if (!item)
@@ -129,8 +135,8 @@ router.post("/userItem", verify, async(req, res) => {
                 .json({ status: 400, message: "Zero items will not be saved!" });
 
         const storage = new ItemUserCon({
-            itemKY: item._id,
-            userKY: user._id,
+            item: item._id,
+            user: user._id,
             amount: amount,
         });
 
