@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    rootMonster: Monster,
+    rootMonster: mongoose.Schema.Types.ObjectId,
     a1: mongoose.Schema.Types.ObjectId,
     a2: mongoose.Schema.Types.ObjectId,
     a3: mongoose.Schema.Types.ObjectId,
