@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     itemImageURL: String,
     itemDescription: String,
     isitemCookable: Boolean,
-    cooksInto: Item
+    cooksInto: Schema.Types.ObjectId
 });
 
 module.exports = mongoose.model("Item", userSchema);

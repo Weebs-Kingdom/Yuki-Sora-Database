@@ -3,8 +3,8 @@ const User = require("../User");
 const Item = require("./Item");
 
 const userSchema = new mongoose.Schema({
-    item: Item,
-    user: User,
+    item: Schema.Types.ObjectId,
+    user: Schema.Types.ObjectId,
     amount: Number
 });
 

@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     maxMonsters: Number,
     maxItems: Number,
     saidHallo: Boolean,
-    job: UserJob
+    job: Schema.Types.ObjectId
 });
 
 module.exports = mongoose.model("User", userSchema);

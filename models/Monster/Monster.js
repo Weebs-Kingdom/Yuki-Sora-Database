@@ -8,8 +8,8 @@ const userSchema = new mongoose.Schema({
     maxHp: Number,
     evolveLvl: Number,
     shown: Boolean,
-    evolves: [Monster],
-    attacks: [Attack]
+    evolves: [Schema.Types.ObjectId],
+    attacks: [Schema.Types.ObjectId]
 });
 
 module.exports = mongoose.model("Monster", userSchema);
