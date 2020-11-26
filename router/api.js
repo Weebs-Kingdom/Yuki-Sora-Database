@@ -50,17 +50,7 @@ router.post("/getUserInventory", verify, async(req, res) => {
         return res
             .status(400)
             .json({ status: 400, message: "Inventory not found!" });
-    var returningString = '{status: "200", data: [';
-    var first = true;
-    inventory.forEach((element) => {
-        if (!first) returningString += ",";
-        else first = false;
-
-        returningString +=
-            "{item: " + element.item + ", amount: " + element.amount + "}";
-    });
-    returningString += "]}";
-    res.status(200).json(returningString);
+    res.status(200).json({ status: 200, data: inventory });
 });
 
 router.post("/getUserMonsters", verify, async(req, res) => {
