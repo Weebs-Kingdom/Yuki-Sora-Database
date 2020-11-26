@@ -95,7 +95,7 @@ router.post("/userItem", verify, async(req, res) => {
     const storage = new ItemUserCon({
         item: si._id,
         user: user._id,
-        amount: amount,
+        amount: amount
     });
 
     try {
