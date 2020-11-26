@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    itemKY: String,
-    userKY: String,
+    itemKY: mongoose.Schema.Types.ObjectId,
+    userKY: mongoose.Schema.Types.ObjectId,
     amount: Number
 });
 

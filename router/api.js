@@ -87,11 +87,12 @@ router.post("/userItem", verify, async(req, res) => {
     const amount = req.body.amount;
     const item = await Item.findById(si);
     const user = await getUser(req.body);
-    console.log("user " + user + " item " + item + " am " + amount);
     if (!user)
         return res.status(400).json({ status: 400, message: "User not found!" });
     if (!item)
         return res.status(400).json({ status: 400, message: "Item not found!" });
+
+    const storage = await ItemUserCon.findOne({ itemKY: item._id, userKY: user._id });
 
     const storage = new ItemUserCon({
         itemKY: item._id,
