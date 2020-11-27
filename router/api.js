@@ -215,7 +215,7 @@ router.post("/userJob", verify, async(req, res) => {
         .status(400)
         .json({ status: 400, message: "User not found!" });
 
-    var jPos;
+    var jPos = req.body.jPos;
     if (jPos == "trainee") {} else if (jPos == "coworker") {} else if (jPos == "head" || jPos == "headofdepartment") {
         jPos = "headofdepartment";
     } else if (jPos == "manager") {} else {
