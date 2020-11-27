@@ -176,13 +176,13 @@ router.post("/work", verify, async(req, res) => {
     }
     var cAdd;
     if (userJob.jobPosition == "trainee") {
-        cAdd += job.earningTrainee;
+        cAdd = job.earningTrainee;
     } else if (userJob.jobPosition == "coworker") {
-        cAdd += job.earningCoworker;
+        cAdd = job.earningCoworker;
     } else if (userJob.jobPosition == "headofdepartment") {
-        cAdd += job.earningHeadOfDepartment;
+        cAdd = job.earningHeadOfDepartment;
     } else if (userJob.jobPosition == "manager") {
-        cAdd += job.earningManager;
+        cAdd = job.earningManager;
     } else {
         return res
             .status(400)
