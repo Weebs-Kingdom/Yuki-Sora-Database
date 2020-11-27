@@ -231,7 +231,7 @@ router.post("/userJob", verify, async(req, res) => {
     }
 });
 
-router.remove("/userJob", verify, async(req, res) => {
+router.delete("/userJob", verify, async(req, res) => {
     var user = await getUser(req.body);
     if (!user) return res
         .status(400)
