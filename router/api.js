@@ -175,13 +175,13 @@ router.post("/work", verify, async(req, res) => {
             .json({ status: 400, message: "Job not found!" });
     }
     var cAdd;
-    if (userJob.position == "trainee") {
+    if (userJob.jobPosition == "trainee") {
         cAdd += job.earningTrainee;
-    } else if (userJob.position == "coworker") {
+    } else if (userJob.jobPosition == "coworker") {
         cAdd += job.earningCoworker;
-    } else if (userJob.position == "headofdepartment") {
+    } else if (userJob.jobPosition == "headofdepartment") {
         cAdd += job.earningHeadOfDepartment;
-    } else if (userJob.position == "manager") {
+    } else if (userJob.jobPosition == "manager") {
         cAdd += job.earningManager;
     } else {
         return res
