@@ -1,13 +1,19 @@
 const router = require("express").Router();
+
+//Models
 const User = require("../models/User/User");
 const Item = require("../models/Items/Item");
 const ItemUserCon = require("../models/Items/ItemUserCon");
 const Attack = require("../models/Monster/Attack");
 const Monter = require("../models/Monster/Monster");
 const UserMonster = require("../models/Monster/UserMonster");
-const Serverd = require("../models/Server");
+const Server = require("../models/Server");
 const Monster = require("../models/Monster/Monster");
+const Job = require("../models/User/Job");
+
+//middleware
 const verify = require("../middleware/verifyApiToken");
+const UserJob = require("../models/User/UserJob");
 
 //create ai monster usw.
 router.post("/createFight", verify, async(req, res) => {
@@ -60,16 +66,7 @@ router.post("/getUserMonsters", verify, async(req, res) => {
     var monsters = await UserMonster.find({ user: user._id });
     if (!monsters)
         return res.status(400).json({ status: 400, message: "Monster not found!" });
-    var returningString = '{status: "200", data: [';
-    var first = true;
-    monsters.forEach((element) => {
-        if (!first) returningString += ",";
-        else first = false;
-
-        returningString += "{monster: " + element + "}";
-    });
-    returningString += "]}";
-    res.status(200).json(returningString);
+    res.status(200).json({ status: 200, data: monsters });
 });
 
 router.post("/userItem", verify, async(req, res) => {
@@ -132,7 +129,7 @@ router.post("/userItem", verify, async(req, res) => {
 
         try {
             const savedItem = await storage.save();
-            res.status(200).json({ status: 200, message: savedItem._id });
+            res.status(200).json({ status: 200, _id: savedItem._id, message: "added/removed item to/from player" });
         } catch (err) {
             console.log("an error occured! " + err);
             res.status(400).json({
@@ -141,6 +138,122 @@ router.post("/userItem", verify, async(req, res) => {
                 error: err,
             });
         }
+    }
+});
+
+router.post("/work", verify, async(req, res) => {
+    var user = await getUser(req.body);
+    if (!user) return res
+        .status(400)
+        .json({ status: 400, message: "User not found!" });
+
+    var userJob;
+    try {
+        userJob = await UserJob.findById(user.job);
+    } catch (err) {
+        console.log("an error occured! " + err);
+        return res
+            .status(400)
+            .json({ status: 400, message: "User job not found!" });
+    }
+
+    var ONE_HOUR = 60 * 60 * 1000;
+    var time = ((new Date) - user.lastWorkTime);
+    if (time < ONE_HOUR) {
+        return res
+            .status(400)
+            .json({ status: 400, message: "Can work in" + time * 1000, data: time * 1000 });
+    }
+
+    var job;
+    try {
+        job = await Job.findById(userJob.job);
+    } catch (err) {
+        console.log("an error occured! " + err);
+        return res
+            .status(400)
+            .json({ status: 400, message: "Job not found!" });
+    }
+    var cAdd;
+    if (userJob.position == "trainee") {
+        cAdd += job.earningTrainee;
+    } else if (userJob.position == "coworker") {
+        cAdd += job.earningCoworker;
+    } else if (userJob.position == "headofdepartment") {
+        cAdd += job.earningHeadOfDepartment;
+    } else if (userJob.position == "manager") {
+        cAdd += job.earningManager;
+    } else {
+        return res
+            .status(400)
+            .json({ status: 400, message: "Job document fail" });
+    }
+    try {
+        user.coins += cAdd;
+        await user.save();
+    } catch (err) {
+        console.log("an error occured! " + err);
+        return res
+            .status(400)
+            .json({ status: 400, message: "Database error!" });
+    }
+    res.status(200).json({ status: 200, message: "Added coins!", data: cAdd });
+});
+
+router.post("/userJob", verify, async(req, res) => {
+    const job = req.body.job;
+    var jjob;
+    try {
+        jjob = await Job.findById(job);
+    } catch (e) {
+        return res
+            .status(400)
+            .json({ status: 400, message: "Job not found" });
+    }
+    var user = await getUser(req.body);
+    if (!user) return res
+        .status(400)
+        .json({ status: 400, message: "User not found!" });
+
+    const uJob = new UserJob({ job: job });
+    try {
+        const savedJob = await uJob.save();
+        user.job = savedJob._id;
+        await user.save();
+        res.status(200).json({ status: 200, message: savedJob._id });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({
+            status: 400,
+            message: "error while creating new user!",
+            error: err,
+        });
+    }
+});
+
+router.remove("/userJob", verify, async(req, res) => {
+    var user = await getUser(req.body);
+    if (!user) return res
+        .status(400)
+        .json({ status: 400, message: "User not found!" });
+
+    try {
+        const userJob = UserJob.findById(user.job);
+        await userJob.remove();
+    } catch (err) {
+        console.log("an error occured! " + err);
+    }
+    try {
+        user.job = undefined;
+        await user.save();
+        res.status(200).json({ status: 200, message: "deleted!" });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({
+            status: 400,
+            message: "error while creating new user!",
+            error: err,
+        });
     }
 });
 
@@ -167,7 +280,7 @@ router.patch("/user", verify, async(req, res) => {
         console.log("an error occured! " + err);
         res.status(400).json({
             status: 400,
-            message: "error while patching new user!",
+            message: "error while patching user!",
             error: err,
         });
     }
@@ -182,6 +295,88 @@ router.delete("/user", verify, async(req, res) => {
         res
             .status(400)
             .json({ status: 400, message: "error while deleting user!", error: err });
+    }
+});
+
+router.post("/server", verify, async(req, res) => {
+    const cServer = new Server(req.body);
+    try {
+        const savedServer = await cServer.save();
+        res.status(200).json({ status: 200, message: savedServer._id });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({
+            status: 400,
+            message: "error while creating new server!",
+            error: err,
+        });
+    }
+});
+
+router.patch("/server", verify, async(req, res) => {
+    try {
+        const savedServer = await Server.update({ _id: req.body._id }, req.body.data);
+        res.status(200).json({ status: 200, message: savedServer._id });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({
+            status: 400,
+            message: "error while patching server!",
+            error: err,
+        });
+    }
+});
+
+router.delete("/server", verify, async(req, res) => {
+    try {
+        const savedServer = await Server.remove({ _id: req.body._id });
+        res.status(200).json({ status: 200, message: "removed" });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res
+            .status(400)
+            .json({ status: 400, message: "error while deleting server!", error: err });
+    }
+});
+
+router.post("/job", verify, async(req, res) => {
+    const cJob = new Job(req.body);
+    try {
+        const savedJob = await cJob.save();
+        res.status(200).json({ status: 200, message: savedJob._id });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({
+            status: 400,
+            message: "error while creating new job!",
+            error: err,
+        });
+    }
+});
+
+router.patch("/job", verify, async(req, res) => {
+    try {
+        const savedJob = await Job.update({ _id: req.body._id }, req.body.data);
+        res.status(200).json({ status: 200, message: savedJob._id });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({
+            status: 400,
+            message: "error while patching job!",
+            error: err,
+        });
+    }
+});
+
+router.delete("/job", verify, async(req, res) => {
+    try {
+        const savedJob = await Job.remove({ _id: req.body._id });
+        res.status(200).json({ status: 200, message: "removed" });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res
+            .status(400)
+            .json({ status: 400, message: "error while deleting job!", error: err });
     }
 });
 
