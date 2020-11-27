@@ -215,7 +215,21 @@ router.post("/userJob", verify, async(req, res) => {
         .status(400)
         .json({ status: 400, message: "User not found!" });
 
-    const uJob = new UserJob({ job: job });
+    var jPos;
+    if (jPos == "trainee") {} else if (jPos == "coworker") {} else if (jPos == "head" || jPos == "headofdepartment") {
+        jPos = "headofdepartment";
+    } else if (jPos == "manager") {} else {
+        return res
+            .status(400)
+            .json({ status: 400, message: "Invalid Job role!" });
+    }
+
+    const uJob = new UserJob({
+        job: job,
+        jobLevel: 1,
+        jobXP: 0,
+        jobPosition: jPos
+    });
     try {
         const savedJob = await uJob.save();
         user.job = savedJob._id;
