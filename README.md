@@ -19,7 +19,7 @@ Res. Body:
 ```json
 {
     "status": 200,
-    "message: "",
+    "message": "",
     "_id": "saved item"
 }
 ```
@@ -45,7 +45,7 @@ Res. Body:
 ```json
 {
     "status": 200,
-    "message: "",
+    "message": "",
     "_id": "saved item"
 }
 ```
@@ -70,7 +70,7 @@ Res. Body:
 ```json
 {
     "status": 200,
-    "message: "",
+    "message": "",
     "_id": "saved item"
 }
 ```
@@ -95,7 +95,7 @@ Res. Body:
 ```json
 {
     "status": 200,
-    "message: "",
+    "message": "",
     "_id": "saved item"
 }
 ```
@@ -130,7 +130,7 @@ Res. Body:
 ```json
 {
     "status": 200,
-    "message: "",
+    "message": "",
     "_id": "saved item"
 }
 ```
@@ -163,7 +163,7 @@ Res. Body:
 ```json
 {
     "status": 200,
-    "message: "",
+    "message": "",
     "_id": "saved item"
 }
 ```
@@ -191,7 +191,7 @@ Res. Body:
 ```json
 {
     "status": 200,
-    "message: "",
+    "message": "",
     "_id": "saved item"
 }
 ```
@@ -210,7 +210,7 @@ Res. Body:
 ```json
 {
     "status": 200,
-    "message: "",
+    "message": "",
     "data": "coins"
 }
 ```
@@ -231,7 +231,7 @@ Res. Body:
 ```json
 {
     "status": 200,
-    "message: "",
+    "message": "",
     "_id": "storageId"
 }
 ```
