@@ -31,7 +31,7 @@ Req. Body
 ```json
 {
     "name": "String",
-    "imageUrl: "String",
+    "imageUrl": "String",
     "baseHP": "Number",
     "maxHp": "Number",
     "evolveLvl": "Number",
@@ -165,5 +165,147 @@ Res. Body:
     "status": 200,
     "message: "",
     "_id": "saved item"
+}
+```
+
+## /api/yuki/userJob
+> post, delete, patch
+
+Req. Post Body
+```json
+{
+    "id": "discordUserId",
+    "job": "job id",
+    "jPos": "trainee/coworker/headofdepartment/manager"
+}
+```
+
+Req. Delete Body
+```json
+{
+    "id": "discordUserId"
+}
+```
+
+Res. Body:
+```json
+{
+    "status": 200,
+    "message: "",
+    "_id": "saved item"
+}
+```
+
+## /api/yuki/work
+> post
+
+Req. Post Body
+```json
+{
+    "id": "discordUserId"
+}
+```
+
+Res. Body:
+```json
+{
+    "status": 200,
+    "message: "",
+    "data": "coins"
+}
+```
+
+## /api/yuki/userItem
+> post
+
+Req. Post Body
+```json
+{
+    "item": "item id",
+    "amount": "Number",
+    "id": "discordUserId"
+}
+```
+
+Res. Body:
+```json
+{
+    "status": 200,
+    "message: "",
+    "_id": "storageId"
+}
+```
+
+## /api/yuki/getUserMonsters
+> post
+
+Req. Post Body
+```json
+{
+    "id": "discordUserId"
+}
+```
+
+Res. Body:
+```json
+{
+    "status": 200,
+    "data": ""
+}
+```
+
+## /api/yuki/getUserInventory
+> post
+
+Req. Post Body
+```json
+{
+    "id": "discordUserId"
+}
+```
+
+Res. Body:
+```json
+{
+    "status": 200,
+    "data": ""
+}
+```
+
+## /api/yuki/getUser
+> post
+
+Req. Post Body
+```json
+{
+    "id": "discordUserId"
+}
+```
+
+Res. Body:
+```json
+{
+    "status": 200,
+    "data": ""
+}
+```
+
+## /api/yuki/fight
+> post
+
+Req. Post Body
+```json
+{
+    "id": "discordUserId",
+    "monster": "ID",
+    "dmg": "Number"
+}
+```
+
+Res. Body:
+```json
+{
+    "status": 200,
+    "data": ""
 }
 ```
