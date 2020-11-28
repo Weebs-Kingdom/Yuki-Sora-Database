@@ -271,6 +271,26 @@ router.delete("/userJob", verify, async(req, res) => {
     }
 });
 
+router.post("/coins", verify, async(req, res) => {
+    const coins = req.body.coins;
+    var user = await getUser(req.body);
+    if (!user) return res
+        .status(400)
+        .json({ status: 400, message: "User not found!" });
+
+    user.coins += coins;
+    try {
+        await user.save();
+    } catch (e) {
+        console.log("an error occured! " + err);
+        res.status(400).json({
+            status: 400,
+            message: "error while creating adding coins to user!",
+            error: err,
+        });
+    }
+});
+
 router.post("/user", verify, async(req, res) => {
     const cUser = new User(req.body);
     try {
