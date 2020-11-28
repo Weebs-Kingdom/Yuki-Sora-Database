@@ -309,3 +309,23 @@ Res. Body:
     "data": ""
 }
 ```
+
+
+## /api/yuki/coins
+> post
+
+Req. Post Body
+```json
+{
+    "id": "discordUserId",
+    "coins": "Number"
+}
+```
+
+Res. Body:
+```json
+{
+    "status": 200,
+    "data": ""
+}
+```
