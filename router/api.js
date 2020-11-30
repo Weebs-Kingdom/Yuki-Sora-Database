@@ -28,7 +28,7 @@ router.post("/apiToken", async(req, res) => {
     if (pw == pww) {
         var nToken = "";
         while (true) {
-            nToken = makeToken(20);
+            nToken = makeToken(100);
             const tToken = await ApiToken.findOne({ token: nToken });
             if (!tToken)
                 break;
