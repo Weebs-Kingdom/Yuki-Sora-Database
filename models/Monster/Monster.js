@@ -8,7 +8,11 @@ const userSchema = new mongoose.Schema({
     evolveLvl: Number,
     shown: Boolean,
     evolves: [mongoose.Schema.Types.ObjectId],
-    attacks: [mongoose.Schema.Types.ObjectId]
+    attacks: [mongoose.Schema.Types.ObjectId],
+    aiMonster: {
+        type: Boolean,
+        default: false
+    }
 });
 
 module.exports = mongoose.model("Monster", userSchema);

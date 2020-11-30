@@ -10,12 +10,52 @@ const UserMonster = require("../models/Monster/UserMonster");
 const Server = require("../models/Server");
 const Monster = require("../models/Monster/Monster");
 const Job = require("../models/User/Job");
+const ApiToken = require("../models/ApiToken");
 
 //middleware
 const verify = require("../middleware/verifyApiToken");
 const UserJob = require("../models/User/UserJob");
 
+//API Token creator
+router.post("/apiToken", async(req, res) => {
+    const pw = req.body.pw;
+    const pww = process.env.SECRET_API_PW;
+
+    //if there is no pw
+    if (!pww)
+        return res.status(401).json({ status: "401", message: "HAHAHA nope!" });
+
+    if (pw == pww) {
+        var nToken = "";
+        while (true) {
+            nToken = makeToken(20);
+            const tToken = await ApiToken.findOne({ token: nToken });
+            if (!tToken)
+                break;
+        }
+
+        const sToken = new ApiToken({
+            token: nToken
+        });
+
+        try {
+            const savedToken = await sToken.save();
+        } catch (err) {
+            console.log("an error occured! " + err);
+            res.status(400).json({
+                status: 400,
+                message: "error while creating token!",
+                error: err,
+            });
+        }
+        res.status(200).json({ status: "200", data: nToken });
+    } else {
+        res.status(401).json({ status: "401", message: "HAHAHA nope!" });
+    }
+});
+
 //create ai monster usw.
+//TODO:: make this done
 router.post("/createFight", verify, async(req, res) => {
     res.status(200).json({ message: "test looolz UWU OWO :P" });
 });
@@ -517,6 +557,16 @@ async function getUser(body) {
     if (si) user = await User.findById(si);
 
     return user;
+}
+
+function makeToken(length) {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789#/&%§=?~*';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
 }
 
 module.exports = router;
