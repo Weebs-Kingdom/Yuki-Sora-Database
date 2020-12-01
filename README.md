@@ -50,6 +50,29 @@ Res. Body:
 }
 ```
 
+## /api/yuki/attack
+> post, delete, patch
+
+Req. Body
+```json
+{
+    "baseDmg": "Number",
+    "attackName": "String",
+    "level": "Number",
+    "maxUsage": "Number",
+    "statuseffect": "String"
+}
+```
+
+Res. Body:
+```json
+{
+    "status": 200,
+    "message": "",
+    "_id": "saved item"
+}
+```
+
 ## /api/yuki/job
 > post, delete, patch
 

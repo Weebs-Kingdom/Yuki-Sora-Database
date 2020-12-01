@@ -469,6 +469,20 @@ router.post("/monster", verify, async(req, res) => {
     }
 });
 
+router.get("/monster", verify, async(req, res) => {
+    try {
+        const monsters = await Monster.find({});
+        res.status(200).json({ status: 200, _id: monsters._id, message: "fatched all monsters", data: monsters });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({
+            status: 400,
+            message: "error while fatching monsters!",
+            error: err,
+        });
+    }
+});
+
 router.patch("/monster", verify, async(req, res) => {
     try {
         const savedMonster = await Monster.update({ _id: req.body._id },
@@ -522,7 +536,7 @@ router.patch("/item", verify, async(req, res) => {
         console.log("an error occured! " + err);
         res.status(400).json({
             status: 400,
-            message: "error while patching new item!",
+            message: "error while patching item!",
             error: err,
         });
     }
@@ -537,6 +551,61 @@ router.delete("/item", verify, async(req, res) => {
         res
             .status(400)
             .json({ status: 400, message: "error while deleting item!", error: err });
+    }
+});
+
+router.post("/attack", verify, async(req, res) => {
+    const cItem = new Attack(req.body);
+    try {
+        const savedAttack = await cItem.save();
+        res.status(200).json({ status: 200, _id: savedAttack._id, message: "created attack" });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({
+            status: 400,
+            message: "error while creating new attack!",
+            error: err,
+        });
+    }
+});
+
+router.get("/attack", verify, async(req, res) => {
+    try {
+        const attacks = await Attack.find({});
+        res.status(200).json({ status: 200, _id: attacks._id, message: "fatched all attacks", data: attacks });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({
+            status: 400,
+            message: "error while fatching attacks!",
+            error: err,
+        });
+    }
+});
+
+router.patch("/attack", verify, async(req, res) => {
+    try {
+        const cItem = await Attack.update({ _id: req.body._id }, req.body.data);
+        res.status(200).json({ status: 200, _id: savedItem._id, message: "patched attack" });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({
+            status: 400,
+            message: "error while patching attack!",
+            error: err,
+        });
+    }
+});
+
+router.delete("/attack", verify, async(req, res) => {
+    try {
+        const cItem = await Attack.remove({ _id: req.body._id });
+        res.status(200).json({ status: 200, message: "removed" });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res
+            .status(400)
+            .json({ status: 400, message: "error while deleting attack!", error: err });
     }
 });
 
