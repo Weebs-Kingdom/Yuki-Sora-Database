@@ -1,14 +1,14 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    name: String,
-    imageUrl: String,
-    baseHP: Number,
-    maxHp: Number,
-    evolveLvl: Number,
-    shown: Boolean,
-    evolves: [mongoose.Schema.Types.ObjectId],
-    attacks: [mongoose.Schema.Types.ObjectId],
+    name: { type: String, require: true },
+    imageUrl: { type: String, require: true },
+    baseHP: { type: Number, require: true },
+    maxHp: { type: Number, require: true },
+    evolveLvl: { type: Number, require: true },
+    shown: { type: Boolean, require: true },
+    evolves: { type: [mongoose.Schema.Types.ObjectId], require: true },
+    attacks: { type: [mongoose.Schema.Types.ObjectId], require: true },
     aiMonster: {
         type: Boolean,
         default: false
