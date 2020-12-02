@@ -1,7 +1,7 @@
 # Yuki-Sora-Database
 # API Requests
 ## /api/yuki/item
-> post, delete, patch 
+> post, delete, patch, get
 
 Req. Body
 ```json
@@ -25,7 +25,7 @@ Res. Body:
 ```
 
 ## /api/yuki/monster
-> post, delete, patch
+> post, delete, patch, get
 
 Req. Body
 ```json
@@ -51,7 +51,7 @@ Res. Body:
 ```
 
 ## /api/yuki/attack
-> post, delete, patch
+> post, delete, patch, get
 
 Req. Body
 ```json
@@ -74,32 +74,7 @@ Res. Body:
 ```
 
 ## /api/yuki/job
-> post, delete, patch
-
-Req. Body
-```json
-{
-    "earningTrainee": "Number",
-    "earningCoworker": "Number",
-    "earningHeadOfDepartment": "Number",
-    "earningManager": "Number",
-    "jobName": "String",
-    "shortName": "String",
-    "doing": "String"
-}
-```
-
-Res. Body:
-```json
-{
-    "status": 200,
-    "message": "",
-    "_id": "saved item"
-}
-```
-
-## /api/yuki/job
-> post, delete, patch
+> post, delete, patch, get
 
 Req. Body
 ```json
@@ -159,7 +134,7 @@ Res. Body:
 ```
 
 ## /api/yuki/user
-> post, delete, patch
+> post, delete, patch, get
 
 Req. Body
 ```json

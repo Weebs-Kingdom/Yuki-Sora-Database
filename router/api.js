@@ -346,6 +346,20 @@ router.post("/user", verify, async(req, res) => {
     }
 });
 
+router.get("/user", verify, async(req, res) => {
+    try {
+        const users = await User.find({});
+        res.status(200).json({ status: 200, _id: users._id, message: "fatched all users", data: users });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({
+            status: 400,
+            message: "error while fatching users!",
+            error: err,
+        });
+    }
+});
+
 router.patch("/user", verify, async(req, res) => {
     try {
         const savedUser = await User.update({ _id: req.body._id }, req.body.data);
@@ -410,6 +424,20 @@ router.delete("/server", verify, async(req, res) => {
         res
             .status(400)
             .json({ status: 400, message: "error while deleting server!", error: err });
+    }
+});
+
+router.get("/job", verify, async(req, res) => {
+    try {
+        const jobs = await Job.find({});
+        res.status(200).json({ status: 200, _id: jobs._id, message: "fatched all jobs", data: jobs });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({
+            status: 400,
+            message: "error while fatching jobs!",
+            error: err,
+        });
     }
 });
 
@@ -508,6 +536,20 @@ router.delete("/monster", verify, async(req, res) => {
         res.status(400).json({
             status: 400,
             message: "error while deleting monster!",
+            error: err,
+        });
+    }
+});
+
+router.get("/item", verify, async(req, res) => {
+    try {
+        const items = await Item.find({});
+        res.status(200).json({ status: 200, _id: items._id, message: "fatched all items", data: items });
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({
+            status: 400,
+            message: "error while fatching items!",
             error: err,
         });
     }
@@ -617,6 +659,10 @@ async function getUserDidFromId(id) {
     return await User.findOne({ _id: id }).userID;
 }
 
+async function getServerFromDID(did) {
+    return await Server.findOne({ serverId: did });
+}
+
 async function getUser(body) {
     const s = body.id;
     const si = body._id;
@@ -626,6 +672,17 @@ async function getUser(body) {
     if (si) user = await User.findById(si);
 
     return user;
+}
+
+async function getServer(body) {
+    const s = body.sid;
+    const si = body.s_id;
+    var server;
+
+    if (s) server = await getServerFromDID(s);
+    if (si) server = await Server.findById(si);
+
+    return server;
 }
 
 function makeToken(length) {
