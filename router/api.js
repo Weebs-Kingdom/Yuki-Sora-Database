@@ -483,7 +483,7 @@ router.delete("/job", verify, async(req, res) => {
 });
 
 router.post("/monster", verify, async(req, res) => {
-    console.log("getting req : " + req.body)
+    console.log("getting req : " + JSON.stringify(req.body));
     const cMonster = new Monster(req.body);
     try {
         const savedMonster = await cMonster.save();
