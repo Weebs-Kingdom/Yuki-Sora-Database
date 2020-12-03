@@ -598,6 +598,7 @@ router.delete("/item", verify, async(req, res) => {
 });
 
 router.post("/attack", verify, async(req, res) => {
+    console.log("getting req : " + JSON.stringify(req.body));
     const cItem = new Attack(req.body);
     try {
         const savedAttack = await cItem.save();
