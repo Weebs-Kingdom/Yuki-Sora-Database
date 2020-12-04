@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
     itemType: { type: String, require: true },
     itemCanFound: { type: Boolean, default: false },
     isitemCookable: { type: Boolean, require: true },
-    cooksInto: { type: mongoose.Schema.Types.ObjectId, require: true }
+    cooksInto: { type: mongoose.Schema.Types.ObjectId }
 });
 
 module.exports = mongoose.model("Item", userSchema);
