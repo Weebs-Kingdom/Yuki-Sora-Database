@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
     name: { type: String, require: true },
     imageUrl: { type: String, require: true },
-    baseHP: { type: Number, require: true },
+    baseHp: { type: Number, require: true },
     maxHp: { type: Number, require: true },
     evolveLvl: { type: Number, require: true },
     shown: { type: Boolean, require: true },
