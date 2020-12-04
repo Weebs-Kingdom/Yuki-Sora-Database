@@ -332,8 +332,8 @@ router.post("/coins", verify, async(req, res) => {
 });
 
 router.post("/user", verify, async(req, res) => {
-    const cUser = new User(req.body);
     try {
+        const cUser = new User(req.body);
         const savedUser = await cUser.save();
         res.status(200).json({ status: 200, message: savedUser._id });
     } catch (err) {
@@ -387,8 +387,8 @@ router.delete("/user", verify, async(req, res) => {
 });
 
 router.post("/server", verify, async(req, res) => {
-    const cServer = new Server(req.body);
     try {
+        const cServer = new Server(req.body);
         const savedServer = await cServer.save();
         res.status(200).json({ status: 200, _id: savedServer._id, message: "created server" });
     } catch (err) {
@@ -442,8 +442,8 @@ router.get("/job", verify, async(req, res) => {
 });
 
 router.post("/job", verify, async(req, res) => {
-    const cJob = new Job(req.body);
     try {
+        const cJob = new Job(req.body);
         const savedJob = await cJob.save();
         res.status(200).json({ status: 200, _id: savedJob._id, message: "created job" });
     } catch (err) {
@@ -483,9 +483,8 @@ router.delete("/job", verify, async(req, res) => {
 });
 
 router.post("/monster", verify, async(req, res) => {
-    console.log("getting req : " + JSON.stringify(req.body));
-    const cMonster = new Monster(req.body);
     try {
+        const cMonster = new Monster(req.body);
         const savedMonster = await cMonster.save();
         res.status(200).json({ status: 200, _id: savedMonster._id, message: "created monster" });
     } catch (err) {
@@ -557,8 +556,8 @@ router.get("/item", verify, async(req, res) => {
 });
 
 router.post("/item", verify, async(req, res) => {
-    const cItem = new Item(req.body);
     try {
+        const cItem = new Item(req.body);
         const savedItem = await cItem.save();
         res.status(200).json({ status: 200, _id: savedItem._id, message: "created item" });
     } catch (err) {
@@ -598,9 +597,8 @@ router.delete("/item", verify, async(req, res) => {
 });
 
 router.post("/attack", verify, async(req, res) => {
-    console.log("getting req : " + JSON.stringify(req.body));
-    const cItem = new Attack(req.body);
     try {
+        const cItem = new Attack(req.body);
         const savedAttack = await cItem.save();
         res.status(200).json({ status: 200, _id: savedAttack._id, message: "created attack" });
     } catch (err) {
