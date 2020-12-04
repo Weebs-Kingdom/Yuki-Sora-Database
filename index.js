@@ -3,11 +3,13 @@ const app = express();
 const appRouter = require('./router/app.js');
 const dotenv = require("dotenv");
 const database = require("./middleware/database");
+const parser = require("body-parser");
 
 dotenv.config();
 app.listen(5004, () => console.log('listening on port ' + 5004));
 app.use(express.static('public'));
-app.use(express.json({ limit: '2mb' }));
+app.use(parser.urlencoded({ extended: false }));
+app.use(parser.json());
 app.use(appRouter);
 database.connect();
 console.log("Ready for action!")
