@@ -9,7 +9,6 @@ const userSchema = new mongoose.Schema({
     level: { type: Number, require: true },
     xp: { type: Number, require: true },
     dv: { type: Number, require: true },
-    baseHP: { type: Number, require: true },
     hp: { type: Number, require: true },
     maxHp: { type: Number, require: true },
     evolveDirection: { type: String, require: true },

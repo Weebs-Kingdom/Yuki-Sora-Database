@@ -361,7 +361,7 @@ router.get("/user", verify, async(req, res) => {
 
 router.patch("/user", verify, async(req, res) => {
     try {
-        const savedUser = await User.update({ _id: req.body._id }, req.body.data);
+        const savedUser = await User.updateOne({ _id: req.body._id }, req.body.data);
         res.status(200).json({ status: 200, message: savedUser._id });
     } catch (err) {
         console.log("an error occured! " + err);
@@ -402,7 +402,7 @@ router.post("/server", verify, async(req, res) => {
 
 router.patch("/server", verify, async(req, res) => {
     try {
-        const savedServer = await DiscServer.update({ _id: req.body._id }, req.body.data);
+        const savedServer = await DiscServer.updateOne({ _id: req.body._id }, req.body.data);
         res.status(200).json({ status: 200, _id: savedServer._id, message: "patched server" });
     } catch (err) {
         console.log("an error occured! " + err);
@@ -457,7 +457,7 @@ router.post("/job", verify, async(req, res) => {
 
 router.patch("/job", verify, async(req, res) => {
     try {
-        const savedJob = await Job.update({ _id: req.body._id }, req.body.data);
+        const savedJob = await Job.updateOne({ _id: req.body._id }, req.body.data);
         res.status(200).json({ status: 200, _id: savedJob._id, message: "patched job" });
     } catch (err) {
         console.log("an error occured! " + err);
@@ -512,7 +512,7 @@ router.get("/monster", verify, async(req, res) => {
 
 router.patch("/monster", verify, async(req, res) => {
     try {
-        const savedMonster = await Monster.update({ _id: req.body._id },
+        const savedMonster = await Monster.updateOne({ _id: req.body._id },
             req.body.data
         );
         res.status(200).json({ status: 200, _id: savedMonster._id, message: "patched monster" });
@@ -571,7 +571,7 @@ router.post("/item", verify, async(req, res) => {
 
 router.patch("/item", verify, async(req, res) => {
     try {
-        const cItem = await Item.update({ _id: req.body._id }, req.body.data);
+        const cItem = await Item.updateOne({ _id: req.body._id }, req.body.data);
         res.status(200).json({ status: 200, _id: savedItem._id, message: "patched item" });
     } catch (err) {
         console.log("an error occured! " + err);
@@ -626,7 +626,7 @@ router.get("/attack", verify, async(req, res) => {
 
 router.patch("/attack", verify, async(req, res) => {
     try {
-        const cItem = await Attack.update({ _id: req.body._id }, req.body.data);
+        const cItem = await Attack.updateOne({ _id: req.body._id }, req.body.data);
         res.status(200).json({ status: 200, _id: savedItem._id, message: "patched attack" });
     } catch (err) {
         console.log("an error occured! " + err);
