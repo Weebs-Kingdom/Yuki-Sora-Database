@@ -5,9 +5,8 @@ const User = require("../models/User/User");
 const Item = require("../models/Items/Item");
 const ItemUserCon = require("../models/Items/ItemUserCon");
 const Attack = require("../models/Monster/Attack");
-const Monter = require("../models/Monster/Monster");
 const UserMonster = require("../models/Monster/UserMonster");
-const Server = require("../models/Server");
+const DiscServer = require("../models/Server");
 const Monster = require("../models/Monster/Monster");
 const Job = require("../models/User/Job");
 const ApiToken = require("../models/ApiToken");
@@ -388,7 +387,7 @@ router.delete("/user", verify, async(req, res) => {
 
 router.post("/server", verify, async(req, res) => {
     try {
-        const cServer = new Server(req.body);
+        const cServer = new DiscServer(req.body);
         const savedServer = await cServer.save();
         res.status(200).json({ status: 200, _id: savedServer._id, message: "created server" });
     } catch (err) {
@@ -403,7 +402,7 @@ router.post("/server", verify, async(req, res) => {
 
 router.patch("/server", verify, async(req, res) => {
     try {
-        const savedServer = await Server.update({ _id: req.body._id }, req.body.data);
+        const savedServer = await DiscServer.update({ _id: req.body._id }, req.body.data);
         res.status(200).json({ status: 200, _id: savedServer._id, message: "patched server" });
     } catch (err) {
         console.log("an error occured! " + err);
@@ -417,7 +416,7 @@ router.patch("/server", verify, async(req, res) => {
 
 router.delete("/server", verify, async(req, res) => {
     try {
-        const savedServer = await Server.remove({ _id: req.body._id });
+        const savedServer = await DiscServer.remove({ _id: req.body._id });
         res.status(200).json({ status: 200, message: "removed" });
     } catch (err) {
         console.log("an error occured! " + err);
@@ -660,7 +659,7 @@ async function getUserDidFromId(id) {
 }
 
 async function getServerFromDID(did) {
-    return await Server.findOne({ serverId: did });
+    return await DiscServer.findOne({ serverId: did });
 }
 
 async function getUser(body) {
@@ -680,7 +679,7 @@ async function getServer(body) {
     var server;
 
     if (s) server = await getServerFromDID(s);
-    if (si) server = await Server.findById(si);
+    if (si) server = await DiscServer.findById(si);
 
     return server;
 }
