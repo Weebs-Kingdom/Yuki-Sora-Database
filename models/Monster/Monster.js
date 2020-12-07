@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
     shown: { type: Boolean, require: true },
     evolves: { type: [mongoose.Schema.Types.ObjectId], default: [] },
     attacks: { type: [mongoose.Schema.Types.ObjectId], default: [] },
+    rarity: { type: String, default: "normal" },
     aiMonster: {
         type: Boolean,
         default: false

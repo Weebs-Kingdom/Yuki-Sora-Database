@@ -2,16 +2,16 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
     rootMonster: { type: mongoose.Schema.Types.ObjectId, require: true },
-    a1: { type: mongoose.Schema.Types.ObjectId, require: true },
-    a2: { type: mongoose.Schema.Types.ObjectId, require: true },
-    a3: { type: mongoose.Schema.Types.ObjectId, require: true },
-    a4: { type: mongoose.Schema.Types.ObjectId, require: true },
-    level: { type: Number, require: true },
-    xp: { type: Number, require: true },
+    a1: { type: mongoose.Schema.Types.ObjectId, default: null },
+    a2: { type: mongoose.Schema.Types.ObjectId, default: null },
+    a3: { type: mongoose.Schema.Types.ObjectId, default: null },
+    a4: { type: mongoose.Schema.Types.ObjectId, default: null },
+    level: { type: Number, default: 1 },
+    xp: { type: Number, default: 0 },
     dv: { type: Number, require: true },
     hp: { type: Number, require: true },
     maxHp: { type: Number, require: true },
-    evolveDirection: { type: String, require: true },
+    evolveDirection: { type: String, default: null },
     user: { type: mongoose.Schema.Types.ObjectId, require: true }
 });
 

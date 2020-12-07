@@ -4,18 +4,17 @@ const userSchema = new mongoose.Schema({
     username: { type: String, require: true },
     userID: { type: String, require: true },
     ytplaylist: { type: String, require: true },
-    isBotAdmin: { type: Boolean, require: true },
+    isBotAdmin: { type: Boolean, default: false },
     certLevel: { type: String, require: true },
-    lang: { type: String, require: true },
-    lastWorkTime: { type: Date, require: true },
-    lastDungeonVisit: { type: Date, require: true },
-    coins: { type: Number, require: true },
-    xp: { type: Number, require: true },
-    level: { type: Number, require: true },
-    maxMonsters: { type: Number, require: true },
-    maxItems: { type: Number, require: true },
-    saidHallo: { type: Boolean, require: true },
-    job: { type: mongoose.Schema.Types.ObjectId, require: true }
+    lang: { type: String, default: "en" },
+    lastWorkTime: { type: Date },
+    lastDungeonVisit: { type: Date },
+    coins: { type: Number, default: 0 },
+    xp: { type: Number, default: 0 },
+    level: { type: Number, default: 0 },
+    maxMonsters: { type: Number, default: 10 },
+    maxItems: { type: Number, default: 40 },
+    job: { type: mongoose.Schema.Types.ObjectId }
 });
 
 module.exports = mongoose.model("User", userSchema);

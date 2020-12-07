@@ -21,8 +21,9 @@ router.post("/apiToken", async(req, res) => {
     const pww = process.env.SECRET_API_PW;
 
     //if there is no pw
-    if (!pww)
-        return res.status(401).json({ status: "401", message: "HAHAHA nope!" });
+    //disabled!
+    //if (!pww)
+    return res.status(401).json({ status: "401", message: "HAHAHA nope!" });
 
     if (pw == pww) {
         var nToken = "";
@@ -59,6 +60,51 @@ router.post("/createFight", verify, async(req, res) => {
     res.status(200).json({ message: "test looolz UWU OWO :P" });
 });
 
+router.post("/userRandomMonster", verify, async(req, res) => {
+    var user = await getUser(req.body);
+    var rar = 0;
+    if (req.body.rarity)
+        rar = stringToRarityInt(req.body.rarity)
+
+    if (!user)
+        return res.status(400).json({ status: 400, message: "User not found!" });
+
+    var mnsters = await Monster.find({});
+    mnsters = shuffle(mnsters);
+    var mnster = undefined;
+    for (let i = 0; i < mnsters.length; i++) {
+        var element = mnsters[i];
+        if (element.rarity >= rar) {
+            mnster = element;
+            break;
+        }
+    }
+    if (!mnster)
+        return res.status(400).json({ status: 400, message: "No monster with rarityy found!" });
+
+    var umnster = new UserMonster({
+        rootMonster: mnster._id,
+        hp: mnster.baseHp,
+        maxHp: mnster.baseHp,
+        user: user._id,
+        dv: getRandomInt(0, 15)
+    });
+
+    var u = undefined;
+    try {
+        u = await umnster.save();
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(400).json({
+            status: 400,
+            message: "error while creating new user!",
+            error: err,
+        });
+    }
+
+    return res.status(200).json({ status: 200, message: "Added monster", data: u });
+});
+
 //every fight step, just calculation
 router.post("/fight", verify, async(req, res) => {
     const m1 = req.body.monster;
@@ -75,6 +121,15 @@ router.post("/fight", verify, async(req, res) => {
     monster1.hp = monster1.hp - dmg;
     monster1 = await monster1.save();
     res.status(200).json({ status: "200", data: [monster1] });
+});
+
+router.post("/getServer", verify, async(req, res) => {
+    const server = await getServer(req.body);
+
+    if (!server)
+        return res.status(400).json({ status: 400, message: "Server not found!" });
+    //maybe to this in more specific json text yk...
+    res.status(200).json({ status: "200", data: server });
 });
 
 router.post("/getUser", verify, async(req, res) => {
@@ -347,6 +402,14 @@ router.post("/user", verify, async(req, res) => {
 
 router.get("/user", verify, async(req, res) => {
     try {
+        const sUser = await getUser(req.body);
+        if (sUser) {
+            res.status(400).json({ status: 400, message: "This user already exists!" });
+        }
+    } catch (e) {
+        res.status(400).json({ status: 400, message: "This user already exists!" });
+    }
+    try {
         const users = await User.find({});
         res.status(200).json({ status: 200, _id: users._id, message: "fatched all users", data: users });
     } catch (err) {
@@ -386,6 +449,15 @@ router.delete("/user", verify, async(req, res) => {
 });
 
 router.post("/server", verify, async(req, res) => {
+    try {
+        const sServer = await getServer(req.body);
+        if (sServer) {
+            res.status(400).json({ status: 400, message: "This server already exists!" });
+        }
+    } catch (e) {
+        res.status(400).json({ status: 400, message: "This server already exists!" });
+    }
+
     try {
         const cServer = new DiscServer(req.body);
         const savedServer = await cServer.save();
@@ -692,6 +764,42 @@ function makeToken(length) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
+}
+
+function stringToRarityInt(strin) {
+    switch (strin) {
+        case "normal":
+            return 0;
+
+        case "epic":
+            return 1;
+
+        case "legendary":
+            return 2;
+
+        case "mystic":
+            return 3;
+
+        default:
+            return 0;
+    }
+}
+
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 module.exports = router;

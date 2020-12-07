@@ -4,20 +4,18 @@ const userSchema = new mongoose.Schema({
     serverName: String,
     serverId: String,
     serverYtPlaylist: String,
-    musicListenerId: String,
-    workChannelId: String,
-    shopChannelId: String,
     certificationMessageId: String,
     certificationChannelId: String,
-    defaultMemberRoleId: String,
-    defaultTempGamerRoleId: String,
     welcomeMessageChannelId: String,
     welcomeText: String,
     memberCountStatsChannelId: String,
-    setupDone: Boolean,
-    setupMode: Boolean,
+    setupDone: { tyoe: Boolean, default: false },
     roleIds: [String],
-    autoChannelIds: [String]
+    defaultMemberRoleId: String,
+    defaultTempGamerRoleId: String,
+    autoChannelIds: [String],
+    primeRoleId: String,
+    vipRoleId: String
 });
 
 module.exports = mongoose.model("Server", userSchema);
