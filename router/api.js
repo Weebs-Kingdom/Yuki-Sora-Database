@@ -415,6 +415,10 @@ router.get("/user", verify, async(req, res) => {
 });
 
 router.patch("/user", verify, async(req, res) => {
+    const user = await getUser(req.body);
+    if (user)
+        return res.status(400).json({ status: 400, message: "user does not exist" });
+
     try {
         const savedUser = await User.updateOne({ _id: req.body._id }, req.body.data);
         res.status(200).json({ status: 200, message: savedUser._id });
@@ -465,6 +469,9 @@ router.post("/server", verify, async(req, res) => {
 });
 
 router.patch("/server", verify, async(req, res) => {
+    const ser = await getServer(req.body);
+    if (ser)
+        return res.status(400).json({ status: 400, message: "server does not exist" });
     try {
         const savedServer = await DiscServer.updateOne({ _id: req.body._id }, req.body.data);
         res.status(200).json({ status: 200, _id: savedServer._id, message: "patched server" });
