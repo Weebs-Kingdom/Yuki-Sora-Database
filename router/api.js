@@ -402,14 +402,6 @@ router.post("/user", verify, async(req, res) => {
 
 router.get("/user", verify, async(req, res) => {
     try {
-        const sUser = await getUser(req.body);
-        if (sUser) {
-            res.status(400).json({ status: 400, message: "This user already exists!" });
-        }
-    } catch (e) {
-        res.status(400).json({ status: 400, message: "This user already exists!" });
-    }
-    try {
         const users = await User.find({});
         res.status(200).json({ status: 200, _id: users._id, message: "fatched all users", data: users });
     } catch (err) {

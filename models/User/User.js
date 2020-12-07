@@ -5,7 +5,6 @@ const userSchema = new mongoose.Schema({
     userID: { type: String, require: true },
     ytplaylist: { type: String, require: true },
     isBotAdmin: { type: Boolean, default: false },
-    certLevel: { type: String, require: true },
     lang: { type: String, default: "en" },
     lastWorkTime: { type: Date },
     lastDungeonVisit: { type: Date },
