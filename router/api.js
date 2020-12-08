@@ -389,7 +389,7 @@ router.post("/user", verify, async(req, res) => {
     try {
         const cUser = new User(req.body);
         const savedUser = await cUser.save();
-        res.status(200).json({ status: 200, message: savedUser._id });
+        res.status(200).json({ status: 200, _id: savedUser._id, message: "created user" });
     } catch (err) {
         console.log("an error occured! " + err);
         res.status(400).json({

@@ -5,12 +5,18 @@ const dotenv = require("dotenv");
 const database = require("./middleware/database");
 const parser = require("body-parser");
 
+var methodOverride = require('method-override')
+
 dotenv.config();
 app.listen(5004, () => console.log('listening on port ' + 5004));
 app.use(express.static('public'));
 app.use(parser.urlencoded({ extended: false }));
 app.use(parser.json());
 app.use(appRouter);
+
+app.use(methodOverride('X-HTTP-Method')) //          Microsoft
+app.use(methodOverride('X-HTTP-Method-Override')) // Google/GData
+
 database.connect();
 console.log("Ready for action!")
 
