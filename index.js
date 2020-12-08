@@ -14,7 +14,7 @@ app.use(parser.urlencoded({ extended: false }));
 app.use(parser.json());
 app.use(appRouter);
 
-app.use(methodOverride('X-HTTP-Method')) //          Microsoft
+//app.use(methodOverride('X-HTTP-Method')) //          Microsoft
 app.use(methodOverride('X-HTTP-Method-Override')) // Google/GData
 
 database.connect();
