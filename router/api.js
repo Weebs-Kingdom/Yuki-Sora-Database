@@ -421,7 +421,7 @@ router.patch("/user", verify, async(req, res) => {
 
     try {
         const savedUser = await User.updateOne({ _id: req.body._id }, req.body.data);
-        res.status(200).json({ status: 200, message: savedUser._id });
+        res.status(200).json({ status: 200, _id: savedUser._id, message: "patched user" });
     } catch (err) {
         console.log("an error occured! " + err);
         res.status(400).json({
