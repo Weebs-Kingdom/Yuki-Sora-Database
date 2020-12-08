@@ -5,7 +5,8 @@ const userSchema = new mongoose.Schema({
     attackName: { type: String, require: true },
     level: { type: Number, require: true },
     maxUsage: { type: Number, require: true },
-    statusEffect: { type: String, require: true }
+    statusEffect: { type: String, require: true },
+    attackType: { type: String, require: true }
 });
 
 module.exports = mongoose.model("Attack", userSchema);

@@ -10,6 +10,7 @@ const DiscServer = require("../models/Server");
 const Monster = require("../models/Monster/Monster");
 const Job = require("../models/User/Job");
 const ApiToken = require("../models/ApiToken");
+const AiMonster = require("../models/Monster/AiMonster");
 
 //middleware
 const verify = require("../middleware/verifyApiToken");
@@ -54,10 +55,50 @@ router.post("/apiToken", async(req, res) => {
     }
 });
 
-//create ai monster usw.
-//TODO:: make this done
 router.post("/createFight", verify, async(req, res) => {
-    res.status(200).json({ message: "test looolz UWU OWO :P" });
+    const user = await getUser(req.body);
+    if (!user)
+        return res.status(200).json({ status: 400, message: "User not found!" });
+
+    var t = await AiMonster.find({ user: user._id });
+    if (t)
+        await t.remove();
+
+    var mnsters = await Monster.find();
+    shuffle(mnsters);
+    const mnster = mnsters[0];
+
+    const newAi = new AiMonster({
+        rootMonster: mnsters._id,
+        level: getRandomInt(mnster.initialLevel, mnster.initialLevel + 10),
+        dv: getRandomInt(0, 15),
+        hp: mnster.baseHp,
+        maxHp: mnster.baseHp,
+        user: user._id
+    });
+
+    const sAi = await newAi.save();
+    res.status(200).json({ status: 200, data: sAi, message: "Created ai monster" });
+});
+
+router.post("/giveRandomItem", verify, async(req, res) => {
+    const user = await getUser(req.body);
+    if (!user)
+        return res.status(200).json({ status: 400, message: "User not found!" });
+
+    const amount = req.body.amount;
+    var rar = req.body.rarity;
+    if (!rar)
+        rar = 0;
+    for (let i = 0; i < amount; i++) {
+        const dItem = await getRandomItem(rar);
+        if (!dItem)
+            return res.status(200).json({ status: 400, message: "No Item for rarity found!" });
+
+        giveUserItem(1, item, user);
+    }
+
+    res.status(200).json({ status: 200, data: sAi, message: "Created ai monster" });
 });
 
 router.post("/userRandomMonster", verify, async(req, res) => {
@@ -107,20 +148,55 @@ router.post("/userRandomMonster", verify, async(req, res) => {
 
 //every fight step, just calculation
 router.post("/fight", verify, async(req, res) => {
-    const m1 = req.body.monster;
-    const dmg = req.body.dmg;
+    const user = getUser(req.body);
+    const m1 = req.body.monster1;
+    const m2 = req.body.monster2;
+    const isAi1 = req.body.ai1;
+    const isAi2 = req.body.ai2;
+    const attck = req.body.attack;
 
-    if (!m1 || !dmg)
+    if (!user)
         return res
             .status(200)
             .json({ status: 400, message: "Request is mssing arguments" });
 
-    var monster1 = await UserMonster.findById(m1);
-    if (!monster1)
+    var monster1 = undefined;
+    var monster2 = undefined;
+
+    if (isAi1) {
+        monster2 = await AiMonster.findOne({ user: user._id });
+    } else {
+        monster2 = await UserMonster.findById(m2);
+    }
+
+    if (isAi2) {
+        monster2 = await AiMonster.findOne({ user: user._id });
+    } else {
+        monster2 = await UserMonster.findById(m2);
+    }
+
+    if (!monster1 || !monster2)
         return res.status(200).json({ status: 400, message: "Monster not found!" });
-    monster1.hp = monster1.hp - dmg;
-    monster1 = await monster1.save();
-    res.status(200).json({ status: "200", data: [monster1] });
+
+    var attack = undefined;
+    if (isAi1) {
+        const mroot = await Monster.findById(m1.rootMonster);
+        if (!mroot)
+            return res.status(200).json({ status: 400, message: "Monster not found!" });
+        var atts = mroot.attacks;
+        shuffle(atts);
+        attack = atts[0];
+    } else {
+        attack = attck;
+    }
+
+    attack = await Attack.findById(attack);
+    const dmg = attack(attack, monster1, monster2);
+
+    monster2.hp = monster2.hp - dmg;
+    const sMonster = await monster2.save();
+
+    res.status(200).json({ status: "200", monster1: monster1, monster2: sMonster, attack: attack });
 });
 
 router.post("/getServer", verify, async(req, res) => {
@@ -150,6 +226,13 @@ router.post("/getUserInventory", verify, async(req, res) => {
         return res
             .status(200)
             .json({ status: 400, message: "Inventory not found!" });
+
+    for (let i = 0; i < inventory.length; i++) {
+        const it = await Item.findById(inventory[i].item);
+        inventory[i].itemName = it.itemName;
+        delete inventory[i].user;
+    }
+
     res.status(200).json({ status: 200, data: inventory });
 });
 
@@ -166,73 +249,14 @@ router.post("/getUserMonsters", verify, async(req, res) => {
 router.post("/userItem", verify, async(req, res) => {
     const si = req.body.item;
     const amount = req.body.amount;
-    var item;
-    var user;
-    try {
-        item = await Item.findById(si);
-    } catch (err) {
-        return res.status(200).json({ status: 400, message: "Item not found!" });
-    }
-    user = await getUser(req.body);
+    var item = await Item.findById(si);
+    if (!item)
+        return res.status(200).json({ status: 400, message: "item not found!" });
+    var user = getUser(req.body);
     if (!user)
         return res.status(200).json({ status: 400, message: "User not found!" });
-    if (!item)
-        return res.status(200).json({ status: 400, message: "Item not found!" });
-
-    //Test if storage place already exists
-    var st = await ItemUserCon.findOne({ itemKY: item._id, userKY: user._id });
-    if (st) {
-        st.amount += amount;
-        if (st.amount < 0)
-            return res
-                .status(200)
-                .json({ status: 400, message: "Can't have negative amount of items" });
-
-        if (st.amount == 0) {
-            st.remove();
-            res.status(200).json({ status: 200, message: "removed record, its empty" });
-        }
-
-        try {
-            const storage = await st.save();
-            res.status(200).json({ status: 200, _id: storage._id, message: "add storage" });
-        } catch (err) {
-            console.log("an error occured! " + err);
-            res.status(200).json({
-                status: 400,
-                message: "error while creating new user!",
-                error: err,
-            });
-        }
-    } else {
-        if (amount < 0)
-            return res
-                .status(200)
-                .json({ status: 400, message: "Can't have negative amount of items" });
-
-        if (amount == 0)
-            return res
-                .status(200)
-                .json({ status: 400, message: "Zero items will not be saved!" });
-
-        const storage = new ItemUserCon({
-            item: item._id,
-            user: user._id,
-            amount: amount,
-        });
-
-        try {
-            const savedItem = await storage.save();
-            res.status(200).json({ status: 200, _id: savedItem._id, message: "added/removed item to/from player" });
-        } catch (err) {
-            console.log("an error occured! " + err);
-            res.status(200).json({
-                status: 400,
-                message: "error while creating new user!",
-                error: err,
-            });
-        }
-    }
+    savedItem = giveUserItem(amount, item, user)
+    res.status(200).json({ status: 200, _id: savedItem._id, message: "added/removed item to/from player" });
 });
 
 router.post("/work", verify, async(req, res) => {
@@ -720,6 +744,92 @@ router.delete("/attack", verify, async(req, res) => {
             .json({ status: 400, message: "error while deleting attack!", error: err });
     }
 });
+
+async function giveUserItem(amount, item, user) {
+
+    //Test if storage place already exists
+    var st = await ItemUserCon.findOne({ itemKY: item._id, userKY: user._id });
+    if (st) {
+        st.amount += amount;
+        if (st.amount < 0)
+            return res
+                .status(200)
+                .json({ status: 400, message: "Can't have negative amount of items" });
+
+        if (st.amount == 0) {
+            st.remove();
+            res.status(200).json({ status: 200, message: "removed record, its empty" });
+        }
+
+        try {
+            const storage = await st.save();
+            res.status(200).json({ status: 200, _id: storage._id, message: "add storage" });
+        } catch (err) {
+            console.log("an error occured! " + err);
+            res.status(200).json({
+                status: 400,
+                message: "error while creating new user!",
+                error: err,
+            });
+        }
+    } else {
+        if (amount < 0)
+            return res
+                .status(200)
+                .json({ status: 400, message: "Can't have negative amount of items" });
+
+        if (amount == 0)
+            return res
+                .status(200)
+                .json({ status: 400, message: "Zero items will not be saved!" });
+
+        const storage = new ItemUserCon({
+            item: item._id,
+            user: user._id,
+            amount: amount,
+        });
+
+        try {
+            const savedItem = await storage.save();
+            return savedItem;
+        } catch (err) {
+            console.log("an error occured! " + err);
+            res.status(200).json({
+                status: 400,
+                message: "error while creating new user!",
+                error: err,
+            });
+        }
+    }
+}
+
+async function getRandomItem(minRarity) {
+    var items = await Item.find();
+    shuffle(items);
+    for (let i = 0; i < items.length; i++) {
+        if (stringToRarityInt(items[i].itemRarity) >= minRarity) {
+            return items[i];
+        }
+    }
+}
+
+function attack(attack, monster, monster1) {
+    var baseDmg = attack.baseDmg;
+    var lvl = monster.level;
+    var stab = calcStab(monster, monster1);
+    var efficiency = calcEfficiency(monster, monster1);
+    var dmg = (((lvl * (1 / 3)) + 2) + baseDmg) * efficiency * stab;
+
+    return dmg;
+}
+
+function calcStab(monster, monster1) {
+    return 1;
+}
+
+function calcEfficiency(monster, monster1) {
+    return 1;
+}
 
 async function getUserFromDID(did) {
     return await User.findOne({ userID: did });
