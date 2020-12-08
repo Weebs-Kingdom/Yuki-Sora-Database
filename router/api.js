@@ -42,7 +42,7 @@ router.post("/apiToken", async(req, res) => {
             const savedToken = await sToken.save();
         } catch (err) {
             console.log("an error occured! " + err);
-            res.status(400).json({
+            res.status(200).json({
                 status: 400,
                 message: "error while creating token!",
                 error: err,
@@ -67,7 +67,7 @@ router.post("/userRandomMonster", verify, async(req, res) => {
         rar = stringToRarityInt(req.body.rarity)
 
     if (!user)
-        return res.status(400).json({ status: 400, message: "User not found!" });
+        return res.status(200).json({ status: 400, message: "User not found!" });
 
     var mnsters = await Monster.find({});
     mnsters = shuffle(mnsters);
@@ -80,7 +80,7 @@ router.post("/userRandomMonster", verify, async(req, res) => {
         }
     }
     if (!mnster)
-        return res.status(400).json({ status: 400, message: "No monster with rarityy found!" });
+        return res.status(200).json({ status: 400, message: "No monster with rarityy found!" });
 
     var umnster = new UserMonster({
         rootMonster: mnster._id,
@@ -95,7 +95,7 @@ router.post("/userRandomMonster", verify, async(req, res) => {
         u = await umnster.save();
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while creating new user!",
             error: err,
@@ -112,12 +112,12 @@ router.post("/fight", verify, async(req, res) => {
 
     if (!m1 || !dmg)
         return res
-            .status(400)
+            .status(200)
             .json({ status: 400, message: "Request is mssing arguments" });
 
     var monster1 = await UserMonster.findById(m1);
     if (!monster1)
-        return res.status(400).json({ status: 400, message: "Monster not found!" });
+        return res.status(200).json({ status: 400, message: "Monster not found!" });
     monster1.hp = monster1.hp - dmg;
     monster1 = await monster1.save();
     res.status(200).json({ status: "200", data: [monster1] });
@@ -127,7 +127,7 @@ router.post("/getServer", verify, async(req, res) => {
     const server = await getServer(req.body);
 
     if (!server)
-        return res.status(400).json({ status: 400, message: "Server not found!" });
+        return res.status(200).json({ status: 400, message: "Server not found!" });
     //maybe to this in more specific json text yk...
     res.status(200).json({ status: "200", data: server });
 });
@@ -136,7 +136,7 @@ router.post("/getUser", verify, async(req, res) => {
     const user = await getUser(req.body);
 
     if (!user)
-        return res.status(400).json({ status: 400, message: "User not found!" });
+        return res.status(200).json({ status: 400, message: "User not found!" });
     //maybe to this in more specific json text yk...
     res.status(200).json({ status: "200", data: user });
 });
@@ -144,11 +144,11 @@ router.post("/getUser", verify, async(req, res) => {
 router.post("/getUserInventory", verify, async(req, res) => {
     const user = await getUser(req.body);
     if (!user)
-        return res.status(400).json({ status: 400, message: "User not found!" });
+        return res.status(200).json({ status: 400, message: "User not found!" });
     var inventory = await ItemUserCon.find({ user: user._id });
     if (!inventory)
         return res
-            .status(400)
+            .status(200)
             .json({ status: 400, message: "Inventory not found!" });
     res.status(200).json({ status: 200, data: inventory });
 });
@@ -156,10 +156,10 @@ router.post("/getUserInventory", verify, async(req, res) => {
 router.post("/getUserMonsters", verify, async(req, res) => {
     const user = await getUser(req.body);
     if (!user)
-        return res.status(400).json({ status: 400, message: "User not found!" });
+        return res.status(200).json({ status: 400, message: "User not found!" });
     var monsters = await UserMonster.find({ user: user._id });
     if (!monsters)
-        return res.status(400).json({ status: 400, message: "Monster not found!" });
+        return res.status(200).json({ status: 400, message: "Monster not found!" });
     res.status(200).json({ status: 200, data: monsters });
 });
 
@@ -171,13 +171,13 @@ router.post("/userItem", verify, async(req, res) => {
     try {
         item = await Item.findById(si);
     } catch (err) {
-        return res.status(400).json({ status: 400, message: "Item not found!" });
+        return res.status(200).json({ status: 400, message: "Item not found!" });
     }
     user = await getUser(req.body);
     if (!user)
-        return res.status(400).json({ status: 400, message: "User not found!" });
+        return res.status(200).json({ status: 400, message: "User not found!" });
     if (!item)
-        return res.status(400).json({ status: 400, message: "Item not found!" });
+        return res.status(200).json({ status: 400, message: "Item not found!" });
 
     //Test if storage place already exists
     var st = await ItemUserCon.findOne({ itemKY: item._id, userKY: user._id });
@@ -185,7 +185,7 @@ router.post("/userItem", verify, async(req, res) => {
         st.amount += amount;
         if (st.amount < 0)
             return res
-                .status(400)
+                .status(200)
                 .json({ status: 400, message: "Can't have negative amount of items" });
 
         if (st.amount == 0) {
@@ -198,7 +198,7 @@ router.post("/userItem", verify, async(req, res) => {
             res.status(200).json({ status: 200, _id: storage._id, message: "add storage" });
         } catch (err) {
             console.log("an error occured! " + err);
-            res.status(400).json({
+            res.status(200).json({
                 status: 400,
                 message: "error while creating new user!",
                 error: err,
@@ -207,12 +207,12 @@ router.post("/userItem", verify, async(req, res) => {
     } else {
         if (amount < 0)
             return res
-                .status(400)
+                .status(200)
                 .json({ status: 400, message: "Can't have negative amount of items" });
 
         if (amount == 0)
             return res
-                .status(400)
+                .status(200)
                 .json({ status: 400, message: "Zero items will not be saved!" });
 
         const storage = new ItemUserCon({
@@ -226,7 +226,7 @@ router.post("/userItem", verify, async(req, res) => {
             res.status(200).json({ status: 200, _id: savedItem._id, message: "added/removed item to/from player" });
         } catch (err) {
             console.log("an error occured! " + err);
-            res.status(400).json({
+            res.status(200).json({
                 status: 400,
                 message: "error while creating new user!",
                 error: err,
@@ -238,7 +238,7 @@ router.post("/userItem", verify, async(req, res) => {
 router.post("/work", verify, async(req, res) => {
     var user = await getUser(req.body);
     if (!user) return res
-        .status(400)
+        .status(200)
         .json({ status: 400, message: "User not found!" });
 
     var userJob;
@@ -247,7 +247,7 @@ router.post("/work", verify, async(req, res) => {
     } catch (err) {
         console.log("an error occured! " + err);
         return res
-            .status(400)
+            .status(200)
             .json({ status: 400, message: "User job not found!" });
     }
 
@@ -255,7 +255,7 @@ router.post("/work", verify, async(req, res) => {
     var time = ((new Date) - user.lastWorkTime);
     if (time < ONE_HOUR) {
         return res
-            .status(400)
+            .status(200)
             .json({ status: 400, message: "Can work in" + time * 1000, data: time * 1000 });
     }
 
@@ -265,7 +265,7 @@ router.post("/work", verify, async(req, res) => {
     } catch (err) {
         console.log("an error occured! " + err);
         return res
-            .status(400)
+            .status(200)
             .json({ status: 400, message: "Job not found!" });
     }
     var cAdd;
@@ -279,7 +279,7 @@ router.post("/work", verify, async(req, res) => {
         cAdd = job.earningManager;
     } else {
         return res
-            .status(400)
+            .status(200)
             .json({ status: 400, message: "Job document fail" });
     }
     try {
@@ -288,7 +288,7 @@ router.post("/work", verify, async(req, res) => {
     } catch (err) {
         console.log("an error occured! " + err);
         return res
-            .status(400)
+            .status(200)
             .json({ status: 400, message: "Database error!" });
     }
     res.status(200).json({ status: 200, message: "Added coins!", data: cAdd });
@@ -301,12 +301,12 @@ router.post("/userJob", verify, async(req, res) => {
         jjob = await Job.findById(job);
     } catch (e) {
         return res
-            .status(400)
+            .status(200)
             .json({ status: 400, message: "Job not found" });
     }
     var user = await getUser(req.body);
     if (!user) return res
-        .status(400)
+        .status(200)
         .json({ status: 400, message: "User not found!" });
 
     var jPos = req.body.jPos;
@@ -314,7 +314,7 @@ router.post("/userJob", verify, async(req, res) => {
         jPos = "headofdepartment";
     } else if (jPos == "manager") {} else {
         return res
-            .status(400)
+            .status(200)
             .json({ status: 400, message: "Invalid Job role!" });
     }
 
@@ -331,7 +331,7 @@ router.post("/userJob", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: savedJob._id, message: "added job to user" });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while creating new user!",
             error: err,
@@ -342,7 +342,7 @@ router.post("/userJob", verify, async(req, res) => {
 router.delete("/userJob", verify, async(req, res) => {
     var user = await getUser(req.body);
     if (!user) return res
-        .status(400)
+        .status(200)
         .json({ status: 400, message: "User not found!" });
 
     try {
@@ -357,7 +357,7 @@ router.delete("/userJob", verify, async(req, res) => {
         res.status(200).json({ status: 200, message: "deleted!" });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while creating new user!",
             error: err,
@@ -369,7 +369,7 @@ router.post("/coins", verify, async(req, res) => {
     const coins = req.body.coins;
     var user = await getUser(req.body);
     if (!user) return res
-        .status(400)
+        .status(200)
         .json({ status: 400, message: "User not found!" });
 
     user.coins += coins;
@@ -377,7 +377,7 @@ router.post("/coins", verify, async(req, res) => {
         await user.save();
     } catch (e) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while creating adding coins to user!",
             error: err,
@@ -392,7 +392,7 @@ router.post("/user", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: savedUser._id, message: "created user" });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while creating new user!",
             error: err,
@@ -406,7 +406,7 @@ router.get("/user", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: users._id, message: "fatched all users", data: users });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while fatching users!",
             error: err,
@@ -417,14 +417,14 @@ router.get("/user", verify, async(req, res) => {
 router.patch("/user", verify, async(req, res) => {
     const user = await getUser(req.body);
     if (!user)
-        return res.status(400).json({ status: 400, message: "user does not exist" });
+        return res.status(200).json({ status: 400, message: "user does not exist" });
 
     try {
         const savedUser = await User.updateOne({ _id: req.body._id }, req.body.data);
         res.status(200).json({ status: 200, _id: savedUser._id, message: "patched user" });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while patching user!",
             error: err,
@@ -439,7 +439,7 @@ router.delete("/user", verify, async(req, res) => {
     } catch (err) {
         console.log("an error occured! " + err);
         res
-            .status(400)
+            .status(200)
             .json({ status: 400, message: "error while deleting user!", error: err });
     }
 });
@@ -448,10 +448,10 @@ router.post("/server", verify, async(req, res) => {
     try {
         const sServer = await getServer(req.body);
         if (sServer) {
-            res.status(400).json({ status: 400, message: "This server already exists!" });
+            res.status(200).json({ status: 400, message: "This server already exists!" });
         }
     } catch (e) {
-        res.status(400).json({ status: 400, message: "This server already exists!" });
+        res.status(200).json({ status: 400, message: "This server already exists!" });
     }
 
     try {
@@ -460,7 +460,7 @@ router.post("/server", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: savedServer._id, message: "created server" });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while creating new server!",
             error: err,
@@ -471,13 +471,13 @@ router.post("/server", verify, async(req, res) => {
 router.patch("/server", verify, async(req, res) => {
     const ser = await getServer(req.body);
     if (!ser)
-        return res.status(400).json({ status: 400, message: "server does not exist" });
+        return res.status(200).json({ status: 400, message: "server does not exist" });
     try {
         const savedServer = await DiscServer.updateOne({ _id: req.body._id }, req.body.data);
         res.status(200).json({ status: 200, _id: savedServer._id, message: "patched server" });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while patching server!",
             error: err,
@@ -492,7 +492,7 @@ router.delete("/server", verify, async(req, res) => {
     } catch (err) {
         console.log("an error occured! " + err);
         res
-            .status(400)
+            .status(200)
             .json({ status: 400, message: "error while deleting server!", error: err });
     }
 });
@@ -503,7 +503,7 @@ router.get("/job", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: jobs._id, message: "fatched all jobs", data: jobs });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while fatching jobs!",
             error: err,
@@ -518,7 +518,7 @@ router.post("/job", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: savedJob._id, message: "created job" });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while creating new job!",
             error: err,
@@ -532,7 +532,7 @@ router.patch("/job", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: savedJob._id, message: "patched job" });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while patching job!",
             error: err,
@@ -547,7 +547,7 @@ router.delete("/job", verify, async(req, res) => {
     } catch (err) {
         console.log("an error occured! " + err);
         res
-            .status(400)
+            .status(200)
             .json({ status: 400, message: "error while deleting job!", error: err });
     }
 });
@@ -559,7 +559,7 @@ router.post("/monster", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: savedMonster._id, message: "created monster" });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while creating new monster!",
             error: err,
@@ -573,7 +573,7 @@ router.get("/monster", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: monsters._id, message: "fatched all monsters", data: monsters });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while fatching monsters!",
             error: err,
@@ -589,7 +589,7 @@ router.patch("/monster", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: savedMonster._id, message: "patched monster" });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while patching new monster!",
             error: err,
@@ -603,7 +603,7 @@ router.delete("/monster", verify, async(req, res) => {
         res.status(200).json({ status: 200, message: "removed" });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while deleting monster!",
             error: err,
@@ -617,7 +617,7 @@ router.get("/item", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: items._id, message: "fatched all items", data: items });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while fatching items!",
             error: err,
@@ -632,7 +632,7 @@ router.post("/item", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: savedItem._id, message: "created item" });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while creating new item!",
             error: err,
@@ -646,7 +646,7 @@ router.patch("/item", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: savedItem._id, message: "patched item" });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while patching item!",
             error: err,
@@ -661,7 +661,7 @@ router.delete("/item", verify, async(req, res) => {
     } catch (err) {
         console.log("an error occured! " + err);
         res
-            .status(400)
+            .status(200)
             .json({ status: 400, message: "error while deleting item!", error: err });
     }
 });
@@ -673,7 +673,7 @@ router.post("/attack", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: savedAttack._id, message: "created attack" });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while creating new attack!",
             error: err,
@@ -687,7 +687,7 @@ router.get("/attack", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: attacks._id, message: "fatched all attacks", data: attacks });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while fatching attacks!",
             error: err,
@@ -701,7 +701,7 @@ router.patch("/attack", verify, async(req, res) => {
         res.status(200).json({ status: 200, _id: savedItem._id, message: "patched attack" });
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(400).json({
+        res.status(200).json({
             status: 400,
             message: "error while patching attack!",
             error: err,
@@ -716,7 +716,7 @@ router.delete("/attack", verify, async(req, res) => {
     } catch (err) {
         console.log("an error occured! " + err);
         res
-            .status(400)
+            .status(200)
             .json({ status: 400, message: "error while deleting attack!", error: err });
     }
 });
