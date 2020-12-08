@@ -10,4 +10,4 @@ const userSchema = new mongoose.Schema({
     statusEffect: { type: String, require: true }
 });
 
-module.exports = mongoose.model("UserMonster", userSchema);
+module.exports = mongoose.model("AiMonster", userSchema);
