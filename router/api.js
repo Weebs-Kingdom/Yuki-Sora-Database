@@ -55,6 +55,18 @@ router.post("/apiToken", async(req, res) => {
     }
 });
 
+router.post("/getAttacks", verify, async(req, res) => {
+    const monster = req.body.monster;
+    const mnster = await Monster.findById(monster);
+    const atts = mnster.attacks;
+    var attacks = [atts.length];
+
+    for (let i = 0; i < atts.length; i++) {
+        attack.push(await Attack.findById(atts[i]));
+    }
+    res.status(200).json({ status: 200, data: attacks, message: "Fetched attacks from monster" });
+});
+
 router.post("/createFight", verify, async(req, res) => {
     const user = await getUser(req.body);
     if (!user)
@@ -196,7 +208,7 @@ router.post("/fight", verify, async(req, res) => {
     monster2.hp = monster2.hp - dmg;
     const sMonster = await monster2.save();
 
-    res.status(200).json({ status: "200", monster1: monster1, monster2: sMonster, attack: attack });
+    res.status(200).json({ status: "200", monster1: monster1, monster2: sMonster, attack: attack, dmg: dmg });
 });
 
 router.post("/getServer", verify, async(req, res) => {
