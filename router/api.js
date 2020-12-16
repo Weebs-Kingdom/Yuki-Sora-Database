@@ -102,15 +102,21 @@ router.post("/giveRandomItem", verify, async(req, res) => {
     var rar = req.body.rarity;
     if (!rar)
         rar = 0;
+    else
+        rar = stringToRarityInt(rar);
+
+    var its = [0];
+
     for (let i = 0; i < amount; i++) {
         const dItem = await getRandomItem(rar);
         if (!dItem)
             return res.status(200).json({ status: 400, message: "No Item for rarity found!" });
 
-        giveUserItem(1, item, user);
+        giveUserItem(1, dItem, user);
+        its.push(dItem);
     }
 
-    res.status(200).json({ status: 200, data: sAi, message: "Created ai monster" });
+    res.status(200).json({ status: 200, data: its, message: "Created ai monster" });
 });
 
 router.post("/userRandomMonster", verify, async(req, res) => {
@@ -770,12 +776,10 @@ async function giveUserItem(amount, item, user) {
 
         if (st.amount == 0) {
             st.remove();
-            res.status(200).json({ status: 200, message: "removed record, its empty" });
         }
 
         try {
             const storage = await st.save();
-            res.status(200).json({ status: 200, _id: storage._id, message: "add storage" });
         } catch (err) {
             console.log("an error occured! " + err);
             res.status(200).json({
