@@ -161,7 +161,7 @@ router.post("/userRandomMonster", verify, async(req, res) => {
         });
     }
 
-    return res.status(200).json({ status: 200, message: "Added monster", data: u });
+    return res.status(200).json({ status: 200, message: "Added monster", data: mnster });
 });
 
 //every fight step, just calculation
