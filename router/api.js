@@ -133,7 +133,7 @@ router.post("/userRandomMonster", verify, async(req, res) => {
     var mnster = undefined;
     for (let i = 0; i < mnsters.length; i++) {
         var element = mnsters[i];
-        if (element.rarity >= rar) {
+        if (stringToRarityInt(element.rarity) >= rar) {
             mnster = element;
             break;
         }
