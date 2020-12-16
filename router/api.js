@@ -72,7 +72,7 @@ router.post("/createFight", verify, async(req, res) => {
     if (!user)
         return res.status(200).json({ status: 400, message: "User not found!" });
 
-    var t = await AiMonster.find({ user: user._id });
+    const t = await AiMonster.findOne({ user: user._id });
     if (t)
         await t.remove();
 
