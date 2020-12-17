@@ -194,13 +194,13 @@ router.post("/fight", verify, async(req, res) => {
     }
 
     try {
-        console.log(JSON.stringify(monster1) + " " + JSON.stringify(monster2));
+        console.log(JSON.stringify(monster1) + " \n " + JSON.stringify(monster2) + "\n\n");
     } catch (e) {
 
     }
 
     try {
-        console.log(monster1 + " " + monster2);
+        console.log(monster1 + " \n " + monster2 + "\n\n");
     } catch (e) {
 
     }
