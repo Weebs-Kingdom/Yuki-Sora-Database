@@ -13,7 +13,8 @@ const userSchema = new mongoose.Schema({
     level: { type: Number, default: 0 },
     maxMonsters: { type: Number, default: 10 },
     maxItems: { type: Number, default: 40 },
-    job: { type: mongoose.Schema.Types.ObjectId }
+    job: { type: mongoose.Schema.Types.ObjectId },
+    edit: Boolean
 });
 
 module.exports = mongoose.model("User", userSchema);

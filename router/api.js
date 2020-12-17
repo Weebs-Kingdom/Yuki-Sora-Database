@@ -235,6 +235,18 @@ router.post("/getUser", verify, async(req, res) => {
     res.status(200).json({ status: "200", data: user });
 });
 
+router.get("/getUser", verify, async(req, res) => {
+    const user = await User.find();
+
+    var usrs = [];
+
+    for (let i = 0; i < user.length; i++) {
+        if (user.edit)
+            usrs.push(user[i]);
+    }
+    res.status(200).json({ status: "200", data: usrs });
+});
+
 router.post("/getUserInventory", verify, async(req, res) => {
     const user = await getUser(req.body);
     if (!user)
@@ -415,6 +427,7 @@ router.post("/coins", verify, async(req, res) => {
         .json({ status: 400, message: "User not found!" });
 
     user.coins += coins;
+    user.edit = true;
     try {
         await user.save();
     } catch (e) {
@@ -425,6 +438,7 @@ router.post("/coins", verify, async(req, res) => {
             error: err,
         });
     }
+    res.status(200).json({ status: 200, data: user, message: "add coins" });
 });
 
 router.post("/user", verify, async(req, res) => {
