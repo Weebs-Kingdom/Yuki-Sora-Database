@@ -193,18 +193,6 @@ router.post("/fight", verify, async(req, res) => {
         monster2 = await UserMonster.findById(m2);
     }
 
-    try {
-        console.log(JSON.stringify(monster1) + " \n " + JSON.stringify(monster2) + "\n\n");
-    } catch (e) {
-
-    }
-
-    try {
-        console.log(monster1 + " \n " + monster2 + "\n\n");
-    } catch (e) {
-
-    }
-
     if (!monster1 || !monster2)
         return res.status(200).json({ status: 400, message: "Monster not found! AII" });
 
