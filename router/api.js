@@ -49,7 +49,7 @@ router.post("/apiToken", async(req, res) => {
                 error: err,
             });
         }
-        res.status(200).json({ status: "200", data: nToken });
+        res.status(200).json({ status: 200, data: nToken });
     } else {
         res.status(401).json({ status: "401", message: "HAHAHA nope!" });
     }
@@ -214,7 +214,7 @@ router.post("/fight", verify, async(req, res) => {
     monster2.hp = monster2.hp - dmg;
     const sMonster = await monster2.save();
 
-    res.status(200).json({ status: "200", monster1: monster1, monster2: sMonster, attack: attack, dmg: dmg });
+    res.status(200).json({ status: 200, monster1: monster1, monster2: sMonster, attack: attack, dmg: dmg });
 });
 
 router.post("/getServer", verify, async(req, res) => {
@@ -223,7 +223,7 @@ router.post("/getServer", verify, async(req, res) => {
     if (!server)
         return res.status(200).json({ status: 400, message: "Server not found!" });
     //maybe to this in more specific json text yk...
-    res.status(200).json({ status: "200", data: server });
+    res.status(200).json({ status: 200, data: server });
 });
 
 router.post("/getUser", verify, async(req, res) => {
@@ -232,7 +232,7 @@ router.post("/getUser", verify, async(req, res) => {
     if (!user)
         return res.status(200).json({ status: 400, message: "User not found!" });
     //maybe to this in more specific json text yk...
-    res.status(200).json({ status: "200", data: user });
+    res.status(200).json({ status: 200, data: user });
 });
 
 router.get("/getUser", verify, async(req, res) => {
@@ -247,7 +247,7 @@ router.get("/getUser", verify, async(req, res) => {
             await user[i].save();
         }
     }
-    res.status(200).json({ status: "200", data: usrs });
+    res.status(200).json({ status: 200, data: usrs });
 });
 
 router.post("/getUserInventory", verify, async(req, res) => {

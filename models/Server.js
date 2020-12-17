@@ -9,7 +9,6 @@ const userSchema = new mongoose.Schema({
     welcomeMessageChannelId: String,
     welcomeText: String,
     memberCountStatsChannelId: String,
-    setupDone: { tyoe: Boolean, default: false },
     roleIds: [String],
     defaultMemberRoleId: String,
     defaultTempGamerRoleId: String,
