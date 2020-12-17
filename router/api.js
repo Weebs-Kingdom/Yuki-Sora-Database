@@ -220,17 +220,6 @@ router.post("/fight", verify, async(req, res) => {
         attack = attck;
     }
 
-    if (isAi2) {
-        const mroot = await Monster.findById(monster2.rootMonster);
-        if (!mroot)
-            return res.status(200).json({ status: 400, message: "Monster not found! AI1" });
-        var atts = mroot.attacks;
-        shuffle(atts);
-        attack = atts[0];
-    } else {
-        attack = attck;
-    }
-
     attack = await Attack.findById(attack);
     const dmg = calcDmg(attack, monster1, monster2);
 
