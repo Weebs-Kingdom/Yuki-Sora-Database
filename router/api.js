@@ -166,7 +166,7 @@ router.post("/userRandomMonster", verify, async(req, res) => {
 
 //every fight step, just calculation
 router.post("/fight", verify, async(req, res) => {
-    const user = getUser(req.body);
+    const user = await getUser(req.body);
     const m1 = req.body.monster1;
     const m2 = req.body.monster2;
     const isAi1 = req.body.ai1;
@@ -182,9 +182,6 @@ router.post("/fight", verify, async(req, res) => {
     var monster2 = undefined;
 
     if (isAi1) {
-        console.log("test");
-        console.log(user);
-        console.log(user._id);
         monster1 = await AiMonster.findOne({ user: user._id });
     } else {
         monster1 = await UserMonster.findById(m1);
@@ -296,7 +293,7 @@ router.post("/userItem", verify, async(req, res) => {
     var item = await Item.findById(si);
     if (!item)
         return res.status(200).json({ status: 400, message: "item not found!" });
-    var user = getUser(req.body);
+    var user = await getUser(req.body);
     if (!user)
         return res.status(200).json({ status: 400, message: "User not found!" });
     savedItem = giveUserItem(amount, item, user)
