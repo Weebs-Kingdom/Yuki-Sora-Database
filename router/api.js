@@ -81,7 +81,7 @@ router.post("/createFight", verify, async(req, res) => {
     const mnster = mnsters[0];
 
     const newAi = new AiMonster({
-        rootMonster: mnsters._id,
+        rootMonster: mnster._id,
         level: getRandomInt(mnster.initialLevel, mnster.initialLevel + 10),
         dv: getRandomInt(0, 15),
         hp: mnster.baseHp,
