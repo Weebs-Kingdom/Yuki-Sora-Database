@@ -241,8 +241,10 @@ router.get("/getUser", verify, async(req, res) => {
     var usrs = [];
 
     for (let i = 0; i < user.length; i++) {
-        if (user.edit)
+        if (user.edit) {
             usrs.push(user[i]);
+            user.edit = false;
+        }
     }
     res.status(200).json({ status: "200", data: usrs });
 });
