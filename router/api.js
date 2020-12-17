@@ -105,7 +105,7 @@ router.post("/giveRandomItem", verify, async(req, res) => {
     else
         rar = stringToRarityInt(rar);
 
-    var its = [0];
+    var its = [];
 
     for (let i = 0; i < amount; i++) {
         const dItem = await getRandomItem(rar);
