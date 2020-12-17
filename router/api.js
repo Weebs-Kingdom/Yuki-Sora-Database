@@ -62,7 +62,7 @@ router.post("/getAttacks", verify, async(req, res) => {
     var attacks = [atts.length];
 
     for (let i = 0; i < atts.length; i++) {
-        attack.push(await Attack.findById(atts[i]));
+        calcDmg.push(await Attack.findById(atts[i]));
     }
     res.status(200).json({ status: 200, data: attacks, message: "Fetched attacks from monster" });
 });
@@ -232,7 +232,7 @@ router.post("/fight", verify, async(req, res) => {
     }
 
     attack = await Attack.findById(attack);
-    const dmg = attack(attack, monster1, monster2);
+    const dmg = calcDmg(attack, monster1, monster2);
 
     monster2.hp = monster2.hp - dmg;
     const sMonster = await monster2.save();
@@ -852,7 +852,7 @@ async function getRandomItem(minRarity) {
     }
 }
 
-function attack(attack, monster, monster1) {
+function calcDmg(attack, monster, monster1) {
     var baseDmg = attack.baseDmg;
     var lvl = monster.level;
     var stab = calcStab(monster, monster1);
