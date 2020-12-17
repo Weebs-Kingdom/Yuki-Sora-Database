@@ -241,7 +241,7 @@ router.get("/getUser", verify, async(req, res) => {
     var usrs = [];
 
     for (let i = 0; i < user.length; i++) {
-        if (user.edit) {
+        if (user[i].edit) {
             usrs.push(user[i]);
             user[i].edit = false;
             await user[i].save();
