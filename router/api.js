@@ -182,9 +182,9 @@ router.post("/fight", verify, async(req, res) => {
     var monster2 = undefined;
 
     if (isAi1) {
-        monster2 = await AiMonster.findOne({ user: user._id });
+        monster1 = await AiMonster.findOne({ user: user._id });
     } else {
-        monster2 = await UserMonster.findById(m2);
+        monster1 = await UserMonster.findById(m2);
     }
 
     if (isAi2) {
