@@ -462,7 +462,7 @@ router.patch("/user", verify, async(req, res) => {
         return res.status(200).json({ status: 400, message: "user does not exist" });
 
     try {
-        const savedUser = await User.findOneAndUpdate({ _id: req.body._id }, req.body.data);
+        const savedUser = await User.findOneAndUpdate({ _id: user._id }, req.body.data);
         res.status(200).json({ status: 200, _id: savedUser._id, message: "patched user" });
     } catch (err) {
         console.log("an error occured! " + err);
@@ -515,7 +515,7 @@ router.patch("/server", verify, async(req, res) => {
     if (!ser)
         return res.status(200).json({ status: 400, message: "server does not exist" });
     try {
-        const savedServer = await DiscServer.findOneAndUpdate({ _id: req.body._id }, req.body.data);
+        const savedServer = await DiscServer.findOneAndUpdate({ _id: ser._id }, req.body.data);
         res.status(200).json({ status: 200, _id: savedServer._id, message: "patched server" });
     } catch (err) {
         console.log("an error occured! " + err);
