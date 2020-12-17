@@ -194,13 +194,24 @@ router.post("/fight", verify, async(req, res) => {
     }
 
     if (!monster1 || !monster2)
-        return res.status(200).json({ status: 400, message: "Monster not found!" });
+        return res.status(200).json({ status: 400, message: "Monster not found! AII" });
 
     var attack = undefined;
     if (isAi1) {
         const mroot = await Monster.findById(m1.rootMonster);
         if (!mroot)
-            return res.status(200).json({ status: 400, message: "Monster not found!" });
+            return res.status(200).json({ status: 400, message: "Monster not found! AI" });
+        var atts = mroot.attacks;
+        shuffle(atts);
+        attack = atts[0];
+    } else {
+        attack = attck;
+    }
+
+    if (isAi2) {
+        const mroot = await Monster.findById(m2.rootMonster);
+        if (!mroot)
+            return res.status(200).json({ status: 400, message: "Monster not found! AI1" });
         var atts = mroot.attacks;
         shuffle(atts);
         attack = atts[0];
