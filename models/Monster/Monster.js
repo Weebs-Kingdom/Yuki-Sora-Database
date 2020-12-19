@@ -10,11 +10,7 @@ const userSchema = new mongoose.Schema({
     evolves: { type: [mongoose.Schema.Types.ObjectId], default: [] },
     attacks: { type: [mongoose.Schema.Types.ObjectId], default: [] },
     rarity: { type: String, default: "normal" },
-    aiMonster: {
-        type: Boolean,
-        default: false
-    },
-    monsterType: { type: String, require: true }
+    monsterType: { type: [String], require: true }
 });
 
 module.exports = mongoose.model("Monster", userSchema);

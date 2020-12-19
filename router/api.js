@@ -341,6 +341,7 @@ router.post("/work", verify, async(req, res) => {
     }
     try {
         user.coins += cAdd;
+        user.edit = true;
         await user.save();
     } catch (err) {
         console.log("an error occured! " + err);
