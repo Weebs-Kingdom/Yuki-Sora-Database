@@ -351,6 +351,22 @@ router.post("/work", verify, async(req, res) => {
     res.status(200).json({ status: 200, message: "Added coins!", data: cAdd });
 });
 
+router.post("/getUserJob", verify, async(req, res) => {
+    const user = await getUser(req.body);
+    if (!user) return res
+        .status(200)
+        .json({ status: 400, message: "User not found!" });
+
+    const jb = await UserJob.findById(user.job);
+    if (!jb) return res
+        .status(200)
+        .json({ status: 400, message: "User has no job" });
+
+    const job = await Job.findById(jb.job);
+
+    res.status(200).json({ status: 200, job: job, uJob: jb, message: "got jobs" });
+});
+
 router.post("/userJob", verify, async(req, res) => {
     const job = req.body.job;
     var jjob;
@@ -559,7 +575,7 @@ router.delete("/server", verify, async(req, res) => {
 router.get("/job", verify, async(req, res) => {
     try {
         const jobs = await Job.find({});
-        res.status(200).json({ status: 200, _id: jobs._id, message: "fatched all jobs", data: jobs });
+        res.status(200).json({ status: 200, message: "fatched all jobs", data: jobs });
     } catch (err) {
         console.log("an error occured! " + err);
         res.status(200).json({
