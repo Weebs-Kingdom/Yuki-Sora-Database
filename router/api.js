@@ -58,12 +58,20 @@ router.post("/apiToken", async(req, res) => {
 router.post("/getAttacks", verify, async(req, res) => {
     const monster = req.body.monster;
     const mnster = await Monster.findById(monster);
-    const atts = mnster.attacks;
-    var attacks = [atts.length];
+    if (!mnster) return res.status(200).json({ status: 400, message: "User not found!" });
 
-    for (let i = 0; i < atts.length; i++) {
-        calcDmg.push(await Attack.findById(atts[i]));
+    var attacks = [];
+
+    var lwerEvs = await Monster.find({ evolves: { $contains: mnster._id } });
+    lwerEvs.push(mnster);
+
+    for (let i = 0; i < lwerEvs.length; i++) {
+        const atts = lwerEvs[i].attacks;
+        for (let j = 0; j < atts.length; j++) {
+            attacks.push(await Attack.findById(atts[j]));
+        }
     }
+
     res.status(200).json({ status: 200, data: attacks, message: "Fetched attacks from monster" });
 });
 
