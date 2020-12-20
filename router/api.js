@@ -232,6 +232,19 @@ router.post("/userRandomMonster", verify, async(req, res) => {
     return res.status(200).json({ status: 200, message: "Added monster", data: mnster });
 });
 
+router.post("/healMonster", verify, async(req, res) => {
+    const mn = req.body.mid;
+    var monster = await UserMonster.findById(mn);
+    if (!monster)
+        return res.status(200).json({ status: 400, message: "Monster not found!" });
+
+    monster.hp = maxHp;
+
+    monster = await monster.save();
+
+    return res.status(200).json({ status: 200, message: "healed monster", data: monster });
+});
+
 //every fight step, just calculation
 router.post("/fight", verify, async(req, res) => {
     const user = await getUser(req.body);
