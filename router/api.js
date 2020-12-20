@@ -350,21 +350,20 @@ router.post("/getUserInventory", verify, async(req, res) => {
     if (!user)
         return res.status(200).json({ status: 400, message: "User not found!" });
     var inventory = await ItemUserCon.find({ user: user._id });
+    var data = [];
     if (!inventory)
         return res
             .status(200)
             .json({ status: 400, message: "Inventory not found!" });
 
     for (let i = 0; i < inventory.length; i++) {
-        var iv = inventory[i];
         const it = await Item.findById(inventory[i].item);
-        iv.itemName = it.itemName;
-        delete iv.user;
-        inventory[i] = iv;
-        console.log(iv);
+        data[i].itemName = it.itemName;
+        data[i].item = it._id;
+        data[i].amount = inventory[i].amount;
     }
 
-    res.status(200).json({ status: 200, data: inventory });
+    res.status(200).json({ status: 200, data: data });
 });
 
 router.post("/getUserMonsters", verify, async(req, res) => {
