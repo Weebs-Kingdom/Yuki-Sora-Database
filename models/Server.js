@@ -14,7 +14,11 @@ const userSchema = new mongoose.Schema({
     defaultTempGamerRoleId: String,
     autoChannelIds: [String],
     primeRoleId: String,
-    vipRoleId: String
+    vipRoleId: String,
+    dungeonQueueMessage: String,
+    dungeonEmoji: String,
+    dungeonChan: [String],
+    dungeonChanRoles: [String]
 });
 
 module.exports = mongoose.model("Server", userSchema);
