@@ -356,9 +356,11 @@ router.post("/getUserInventory", verify, async(req, res) => {
             .json({ status: 400, message: "Inventory not found!" });
 
     for (let i = 0; i < inventory.length; i++) {
+        var iv = inventory[i];
         const it = await Item.findById(inventory[i].item);
-        inventory[i]['itemName'] = it.itemName;
-        delete inventory[i]['user'];
+        iv['itemName'] = it.itemName;
+        delete iv['user'];
+        inventory[i] = iv;
     }
 
     res.status(200).json({ status: 200, data: inventory });
