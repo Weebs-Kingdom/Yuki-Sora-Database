@@ -63,7 +63,7 @@ router.post("/getAttacksByUserMonster", verify, async(req, res) => {
 
     var attacks = [];
 
-    var lwerEvs = await Monster.find({ evolves: { $contains: mnster._id } });
+    var lwerEvs = await Monster.find({ evolves: { $in: [mnster._id] } });
     lwerEvs.push(mnster);
 
     for (let i = 0; i < lwerEvs.length; i++) {
