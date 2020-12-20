@@ -407,7 +407,7 @@ router.post("/work", verify, async(req, res) => {
     const anHourAgo = Date.now() - HOUR;
 
     if (user.lastWorkTime > anHourAgo) {
-        var seconds = Math.floor((new Date(Date.now()) - (new Date(anHourAgo))) / 1000);
+        var seconds = Math.floor(((new Date(anHourAgo)) - (new Date(Date.now()))) / 1000);
         var minutes = Math.floor(seconds / 60);
         var hours = Math.floor(minutes / 60);
         var days = Math.floor(hours / 24);
