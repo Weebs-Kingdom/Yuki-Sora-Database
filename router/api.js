@@ -1063,8 +1063,10 @@ async function testMonster(monster) {
     const levelUpXp = level * 7 + ((dv / 5) * 10);
 
     const maxHp = rootMnster.baseHp + (level * ((((dv * level) / 100) + 10) / (((dv) / 100) + 10)));
+    const dif = maxHp - monster.maxHp;
 
     monster.maxHp = maxHp;
+    monster.hp = dif;
 
     if (monster.xp >= levelUpXp) {
         monster.xp -= levelUpXp;
