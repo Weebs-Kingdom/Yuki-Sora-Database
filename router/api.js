@@ -357,8 +357,8 @@ router.post("/getUserInventory", verify, async(req, res) => {
 
     for (let i = 0; i < inventory.length; i++) {
         const it = await Item.findById(inventory[i].item);
-        inventory[i]["itemName"] = it.itemName;
-        delete inventory[i]["user"];
+        inventory[i]['itemName'] = it.itemName;
+        delete inventory[i]['user'];
     }
 
     res.status(200).json({ status: 200, data: inventory });
