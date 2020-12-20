@@ -245,7 +245,7 @@ router.post("/fight", verify, async(req, res) => {
     if (!user)
         return res
             .status(200)
-            .json({ status: 400, message: "Request is mssing arguments" });
+            .json({ status: 400, message: "Request is missing arguments" });
 
     var monster1 = undefined;
     var monster2 = undefined;
