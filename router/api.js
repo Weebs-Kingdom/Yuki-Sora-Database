@@ -211,14 +211,18 @@ router.post("/userRandomMonster", verify, async(req, res) => {
 
     var umnster = new UserMonster({
         rootMonster: mnster._id,
+        level: mnster.initialLevel,
         hp: mnster.baseHp,
         maxHp: mnster.baseHp,
         user: user._id,
-        dv: getRandomInt(0, 15)
+        dv: getRandomInt(1, 15)
     });
+
 
     var u = undefined;
     try {
+        u = await umnster.save();
+        await testMonster(u);
         u = await umnster.save();
     } catch (err) {
         console.log("an error occured! " + err);
@@ -332,6 +336,15 @@ router.post("/getServer", verify, async(req, res) => {
         return res.status(200).json({ status: 400, message: "Server not found!" });
     //maybe to this in more specific json text yk...
     res.status(200).json({ status: 200, data: server });
+});
+
+router.post("/xpOnMonster", verify, async(req, res) => {
+    var monster = await UserMonster.findById(req.body.mid);
+    monster.xp += req.body.xp;
+    monster = await monster.save();
+    await testMonster(monster);
+
+    res.status(200).json({ status: 200, data: monster });
 });
 
 router.post("/getUser", verify, async(req, res) => {
@@ -1035,6 +1048,30 @@ async function giveUserItem(amount, item, user) {
                 message: "error while creating new user!",
                 error: err,
             });
+        }
+    }
+}
+
+async function testMonster(monster) {
+    const rootMnster = await Monster.findById(monster.rootMonster);
+    const level = monster.level;
+    const dv = monster.dv;
+
+    const levelUpXp = level * 7 + ((dv / 5) * 10);
+
+    const maxHp = rootMnster.baseHp + (level * ((((dv * level) / 100) + 10) / (((dv) / 100) + 10)));
+
+    monster.maxHp = maxHp;
+
+    if (monster.xp >= levelUpXp) {
+        monster.xp -= levelUpXp;
+        monster.level += 1;
+    }
+
+    if (rootMnster.evolves && rootMnster.evolveLvl) {
+        if (rootMnster.evolveLvl <= monster.level) {
+            monster.rootMonster = rootMnster.evolves[getRandomInt(0, rootMnster.evolves.length - 1)];
+            await testMonster(monster);
         }
     }
 }
