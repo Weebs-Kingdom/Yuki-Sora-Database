@@ -405,7 +405,7 @@ router.post("/work", verify, async(req, res) => {
 
     var ONE_HOUR = 60 * 60 * 1000;
     var time = ((new Date) - user.lastWorkTime);
-    if (time < ONE_HOUR) {
+    if (time > ONE_HOUR) {
         return res
             .status(200)
             .json({ status: 400, message: "Can work in" + time * 1000, data: time * 1000 });
