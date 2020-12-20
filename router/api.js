@@ -78,7 +78,7 @@ router.post("/getAttacksByUserMonster", verify, async(req, res) => {
     res.status(200).json({ status: 200, data: attacks, message: "Fetched attacks from monster" });
 });
 
-router.post("/getAttacksByUserMonster", verify, async(req, res) => {
+router.post("/selectAttack", verify, async(req, res) => {
     const monster = req.body.monster;
     const slot = req.body.slot;
     const attack = req.body.attack;
