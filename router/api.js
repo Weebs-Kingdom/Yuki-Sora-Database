@@ -358,9 +358,11 @@ router.post("/getUserInventory", verify, async(req, res) => {
 
     for (let i = 0; i < inventory.length; i++) {
         const it = await Item.findById(inventory[i].item);
-        data[i].itemName = it.itemName;
-        data[i].item = it._id;
-        data[i].amount = inventory[i].amount;
+        if (it) {
+            data[i].itemName = it.itemName;
+            data[i].item = it._id;
+            data[i].amount = inventory[i].amount;
+        }
     }
 
     res.status(200).json({ status: 200, data: data });
