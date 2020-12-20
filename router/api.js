@@ -407,10 +407,16 @@ router.post("/work", verify, async(req, res) => {
     const anHourAgo = Date.now() - HOUR;
 
     if (user.lastWorkTime > anHourAgo) {
-        var diff = (anHourAgo - new Date()) / 1000;
-        diff /= 60;
+        var seconds = Math.floor((user.lastWorkTime - (anHourAgo)) / 1000);
+        var minutes = Math.floor(seconds / 60);
+        var hours = Math.floor(minutes / 60);
+        var days = Math.floor(hours / 24);
 
-        const ts = diff;
+        hours = hours - (days * 24);
+        minutes = minutes - (days * 24 * 60) - (hours * 60);
+        seconds = seconds - (days * 24 * 60 * 60) - (hours * 60 * 60) - (minutes * 60);
+
+        const ts = hours + ":" + minutes + ":" + seconds;
         return res
             .status(200)
             .json({ status: 400, message: "Can work in " + ts, data: ts });
