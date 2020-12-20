@@ -622,19 +622,23 @@ router.post("/feedMonster", verify, async(req, res) => {
     const a3 = await Attack.findById(monster.a3);
     const a4 = await Attack.findById(monster.a4);
 
-    var a1i = a1.maxUsage;
-    var a2i = a2.maxUsage;
-    var a3i = a3.maxUsage;
-    var a4i = a4.maxUsage;
+    var a1i;
+    var a2i;
+    var a3i;
+    var a4i;
 
     if (!a1)
         a1i = 0;
+    else a1i = a1.maxUsage;
     if (!a2)
         a2i = 0;
+    else a2i = a2.maxUsage;
     if (!a3)
         a3i = 0;
+    else a3i = a3.maxUsage;
     if (!a4)
         a4i = 0;
+    else a4i = a4.maxUsage;
 
     monster.usage = [a1i, a2i, a3i, a4i];
     await monster.save();
