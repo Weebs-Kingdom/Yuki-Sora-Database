@@ -452,7 +452,7 @@ router.post("/work", verify, async(req, res) => {
             .json({ status: 400, message: "Job document fail" });
     }
 
-    if (userJob.jobStreak < 10 && userJob.jobStreak > 2) {
+    if (userJob.jobStreak <= 2) {} else if (userJob.jobStreak < 10) {
         cAdd += 5;
     } else if (userJob.jobStreak < 15) {
         cAdd += 10;
@@ -463,13 +463,15 @@ router.post("/work", verify, async(req, res) => {
     } else if (userJob.jobStreak < 100) {
         cAdd += 100
     } else if (userJob.jobStreak < 365) {
-        cAdd += 500;
+        cAdd += 300;
     } else if (userJob.jobStreak < 500) {
-        cAdd += 1000;
+        cAdd += 500;
     }
 
     try {
+        testJob(userJob);
         userJob.jobStreak += 1;
+        userJob.xp += getRandomInt(1, 10);
         user.lastWorkTime = Date.now();
         user.coins += cAdd;
         user.edit = true;
@@ -1014,6 +1016,41 @@ async function giveUserItem(amount, item, user) {
                 message: "error while creating new user!",
                 error: err,
             });
+        }
+    }
+}
+
+function testJob(ujob) {
+    if (ujob.jobPosition == "trainee") {
+        if (ujob.xp > 50) {
+            ujob.level += 1;
+        }
+        if (ujob.level > 10) {
+            ujob.jobPosition = "coworker";
+            ujob.xp = 0;
+            ujob.level = 1;
+        }
+    } else if (ujob.jobPosition == "coworker") {
+        if (ujob.xp > 100) {
+            ujob.level += 1;
+        }
+        if (ujob.level > 100) {
+            ujob.jobPosition = "coworker";
+            ujob.xp = 0;
+            ujob.level = 1;
+        }
+    } else if (ujob.jobPosition == "headofdepartment") {
+        if (ujob.xp > 200) {
+            ujob.level += 1;
+        }
+        if (ujob.level > 500) {
+            ujob.jobPosition = "coworker";
+            ujob.xp = 0;
+            ujob.level = 1;
+        }
+    } else if (ujob.jobPosition == "manager") {
+        if (ujob.xp > 500) {
+            ujob.level += 1;
         }
     }
 }
