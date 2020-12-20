@@ -648,6 +648,14 @@ router.post("/coins", verify, async(req, res) => {
         .status(200)
         .json({ status: 400, message: "User not found!" });
 
+    if (coins < 0) {
+        if (user.coins - coins < 0) {
+            return res
+                .status(200)
+                .json({ status: 400, message: "Not enough money!" });
+        }
+    }
+
     user.coins += coins;
     user.edit = true;
     try {
