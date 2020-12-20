@@ -973,7 +973,7 @@ router.delete("/attack", verify, async(req, res) => {
 async function giveUserItem(amount, item, user) {
 
     //Test if storage place already exists
-    var st = await ItemUserCon.findOne({ itemKY: item._id, userKY: user._id });
+    var st = await ItemUserCon.findOne({ item: item._id, user: user._id });
     if (st) {
         st.amount += amount;
         if (st.amount < 0)
