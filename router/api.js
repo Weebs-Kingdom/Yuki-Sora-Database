@@ -238,7 +238,7 @@ router.post("/healMonster", verify, async(req, res) => {
     if (!monster)
         return res.status(200).json({ status: 400, message: "Monster not found!" });
 
-    monster.hp = maxHp;
+    monster.hp = monster.maxHp;
 
     monster = await monster.save();
 
