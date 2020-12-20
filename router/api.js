@@ -69,7 +69,8 @@ router.post("/getAttacksByUserMonster", verify, async(req, res) => {
     for (let i = 0; i < lwerEvs.length; i++) {
         const atts = lwerEvs[i].attacks;
         for (let j = 0; j < atts.length; j++) {
-            attacks.push(await Attack.findById(atts[j]));
+            if (atts[j].level <= mnste.level)
+                attacks.push(await Attack.findById(atts[j]));
         }
     }
 
