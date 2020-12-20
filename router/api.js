@@ -407,7 +407,7 @@ router.post("/work", verify, async(req, res) => {
     const anHourAgo = Date.now() - HOUR;
 
     if (user.lastWorkTime > anHourAgo) {
-        var delta = Math.abs(date_future - date_now) / 1000;
+        var delta = Math.abs(new Date(Date.now()) - anHourAgo) / 1000;
         var hours = Math.floor(delta / 3600) % 24;
         delta -= hours * 3600;
         var minutes = Math.floor(delta / 60) % 60;
