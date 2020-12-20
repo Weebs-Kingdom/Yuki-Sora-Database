@@ -292,7 +292,7 @@ router.post("/fight", verify, async(req, res) => {
             return res.status(200).json({ status: 400, message: "Monster not found! AI" });
         var atts = mroot.attacks;
         shuffle(atts);
-        attack = atts[0];
+        attack = atts[0]._id;
     } else {
         if (!slot)
             return res.status(200).json({ status: 400, message: "No attack used!" });
@@ -326,7 +326,7 @@ router.post("/fight", verify, async(req, res) => {
     attack = await Attack.findById(attack);
     const dmg = calcDmg(attack, monster1, monster2);
 
-    monster2.hp = monster2.hp - dmg;
+    monster2.hp -= dmg;
     const sMonster = await monster2.save();
 
     res.status(200).json({ status: 200, monster1: monster1, monster2: sMonster, attack: attack, dmg: dmg });
