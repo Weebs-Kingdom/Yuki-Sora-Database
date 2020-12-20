@@ -642,7 +642,7 @@ router.post("/feedMonster", verify, async(req, res) => {
 
     monster.usage = [a1i, a2i, a3i, a4i];
     await monster.save();
-    res.status(200).json({ status: 200, message: "deleted!" });
+    res.status(200).json({ status: 200, message: "feed!" });
 });
 
 router.post("/coins", verify, async(req, res) => {
