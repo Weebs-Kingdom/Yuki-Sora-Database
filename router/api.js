@@ -403,12 +403,13 @@ router.post("/work", verify, async(req, res) => {
             .json({ status: 400, message: "User job not found!" });
     }
 
-    var ONE_HOUR = 60 * 60 * 1000;
-    var time = ((new Date) - user.lastWorkTime);
-    if (time < ONE_HOUR) {
+    const HOUR = 1000 * 60 * 60;
+    const anHourAgo = Date.now() - HOUR;
+
+    if (user.lastWorkTime < anHourAgo) {
         return res
             .status(200)
-            .json({ status: 400, message: "Can work in" + time * 1000, data: time * 1000 });
+            .json({ status: 400, message: "Can work in " + Date.parse(time).getMintes(), data: time * 1000 });
     }
 
     var job;
