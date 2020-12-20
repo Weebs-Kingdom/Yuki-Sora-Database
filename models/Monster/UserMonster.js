@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
     a2: { type: mongoose.Schema.Types.ObjectId, default: null },
     a3: { type: mongoose.Schema.Types.ObjectId, default: null },
     a4: { type: mongoose.Schema.Types.ObjectId, default: null },
+    usage: { type: [Number], default: [0, 0, 0, 0] },
     level: { type: Number, default: 1 },
     xp: { type: Number, default: 0 },
     dv: { type: Number, require: true },

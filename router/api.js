@@ -55,10 +55,68 @@ router.post("/apiToken", async(req, res) => {
     }
 });
 
+router.post("/getAttacksByUserMonster", verify, async(req, res) => {
+    const monster = req.body.monster;
+    const mnste = await UserMonster.findById(monster);
+    if (!mnste) return res.status(200).json({ status: 400, message: "Monster not found!" });
+    const mnster = await Monster.findById(mnste.rootMonster);
+
+    var attacks = [];
+
+    var lwerEvs = await Monster.find({ evolves: { $contains: mnster._id } });
+    lwerEvs.push(mnster);
+
+    for (let i = 0; i < lwerEvs.length; i++) {
+        const atts = lwerEvs[i].attacks;
+        for (let j = 0; j < atts.length; j++) {
+            attacks.push(await Attack.findById(atts[j]));
+        }
+    }
+
+    res.status(200).json({ status: 200, data: attacks, message: "Fetched attacks from monster" });
+});
+
+router.post("/getAttacksByUserMonster", verify, async(req, res) => {
+    const monster = req.body.monster;
+    const slot = req.body.slot;
+    const attack = req.body.attack;
+
+    const at = await Attack.findById(attack);
+    var mn = await UserMonster.findById(monster);
+
+    if (!at || !mn) return res.status(200).json({ status: 400, message: "Monster or attack not found!" });
+
+    switch (slot) {
+        case "a1":
+            mn.a1 = at._id;
+            mn.usage[0] = at.maxUsage;
+            break
+
+        case "a2":
+            mn.a2 = at._id;
+            mn.usage[1] = at.maxUsage;
+            break;
+
+        case "a3":
+            mn.a3 = at._id;
+            mn.usage[2] = at.maxUsage;
+            break;
+
+        case "a4":
+            mn.a4 = at._id;
+            mn.usage[3] = at.maxUsage;
+            break;
+    }
+
+    await mn.save();
+
+    res.status(200).json({ status: 200, message: "Updated!" });
+});
+
 router.post("/getAttacks", verify, async(req, res) => {
     const monster = req.body.monster;
     const mnster = await Monster.findById(monster);
-    if (!mnster) return res.status(200).json({ status: 400, message: "User not found!" });
+    if (!mnster) return res.status(200).json({ status: 400, message: "Monster not found!" });
 
     var attacks = [];
 
@@ -180,6 +238,7 @@ router.post("/fight", verify, async(req, res) => {
     const isAi1 = req.body.ai1;
     const isAi2 = req.body.ai2;
     const attck = req.body.attack;
+    const slot = req.body.slot;
 
     if (!user)
         return res
@@ -213,7 +272,33 @@ router.post("/fight", verify, async(req, res) => {
         shuffle(atts);
         attack = atts[0];
     } else {
-        attack = attck;
+        if (!slot)
+            return res.status(200).json({ status: 400, message: "No attack used!" });
+        switch (slot) {
+            case "a1":
+                if (monster1.usage[0] <= 0) return res.status(200).json({ status: 400, message: "No attack usage left!" });
+                attack = monster1.a1;
+                monster1.usage[0] -= 1;
+                break;
+
+            case "a2":
+                if (monster1.usage[1] <= 0) return res.status(200).json({ status: 400, message: "No attack usage left!" });
+                attack = monster1.a2;
+                monster1.usage[1] -= 1;
+                break;
+
+            case "a3":
+                if (monster1.usage[2] <= 0) return res.status(200).json({ status: 400, message: "No attack usage left!" });
+                attack = monster1.a3;
+                monster1.usage[2] -= 1;
+                break;
+
+            case "a4":
+                if (monster1.usage[3] <= 0) return res.status(200).json({ status: 400, message: "No attack usage left!" });
+                attack = monster1.a4;
+                monster1.usage[3] -= 1;
+                break;
+        }
     }
 
     attack = await Attack.findById(attack);
@@ -445,6 +530,39 @@ router.delete("/userJob", verify, async(req, res) => {
             error: err,
         });
     }
+});
+
+router.delete("/userMonster", verify, async(req, res) => {
+    const id = req.body.mid;
+    await UserMonster.remove({ _id: id });
+    res.status(200).json({ status: 200, message: "deleted!" });
+});
+
+router.post("/feedMonster", verify, async(req, res) => {
+    var monster = await UserMonster.findById(req.body.mid);
+
+    const a1 = await Attack.findById(monster.a1);
+    const a2 = await Attack.findById(monster.a2);
+    const a3 = await Attack.findById(monster.a3);
+    const a4 = await Attack.findById(monster.a4);
+
+    var a1i = a1.maxUsage;
+    var a2i = a2.maxUsage;
+    var a3i = a3.maxUsage;
+    var a4i = a4.maxUsage;
+
+    if (!a1)
+        a1i = 0;
+    if (!a2)
+        a2i = 0;
+    if (!a3)
+        a3i = 0;
+    if (!a4)
+        a4i = 0;
+
+    monster.usage = [a1i, a2i, a3i, a4i];
+    await monster.save();
+    res.status(200).json({ status: 200, message: "deleted!" });
 });
 
 router.post("/coins", verify, async(req, res) => {
