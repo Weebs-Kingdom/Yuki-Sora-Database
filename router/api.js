@@ -407,7 +407,7 @@ router.post("/work", verify, async(req, res) => {
     const anHourAgo = Date.now() - HOUR;
 
     if (user.lastWorkTime > anHourAgo) {
-        var diff = (dt2.getTime() - dt1.getTime()) / 1000;
+        var diff = (anHourAgo - new Date()) / 1000;
         diff /= 60;
 
         const ts = diff;
