@@ -406,10 +406,10 @@ router.post("/work", verify, async(req, res) => {
     const HOUR = 1000 * 60 * 60;
     const anHourAgo = Date.now() - HOUR;
 
-    if (user.lastWorkTime < anHourAgo) {
+    if (user.lastWorkTime > anHourAgo) {
         return res
             .status(200)
-            .json({ status: 400, message: "Can work in " + Date.parse(time).getMintes(), data: time * 1000 });
+            .json({ status: 400, message: "Can work in " + Date.now() - anHourAgo, data: time * 1000 });
     }
 
     var job;
