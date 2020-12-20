@@ -412,10 +412,6 @@ router.post("/work", verify, async(req, res) => {
         var hours = Math.floor(minutes / 60);
         var days = Math.floor(hours / 24);
 
-        hours = hours - (days * 24);
-        minutes = minutes - (days * 24 * 60) - (hours * 60);
-        seconds = seconds - (days * 24 * 60 * 60) - (hours * 60 * 60) - (minutes * 60);
-
         const ts = hours + ":" + minutes + ":" + seconds;
         return res
             .status(200)
