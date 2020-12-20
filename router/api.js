@@ -196,6 +196,9 @@ router.post("/userRandomMonster", verify, async(req, res) => {
     if (!user)
         return res.status(200).json({ status: 400, message: "User not found!" });
 
+    if (await (await UserMonster.find({ user: user._id })).length >= user.maxMonsters)
+        return res.status(200).json({ status: 400, message: "Not enough space!" });
+
     var mnsters = await Monster.find({});
     mnsters = shuffle(mnsters);
     var mnster = undefined;
