@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     imageUrl: { type: String, require: true },
     baseHp: { type: Number, require: true },
     evolveLvl: { type: Number, require: true },
-    shown: { type: Boolean, require: true },
+    shown: { type: Boolean, require: true, default: true },
     evolves: { type: [mongoose.Schema.Types.ObjectId], default: [] },
     attacks: { type: [mongoose.Schema.Types.ObjectId], default: [] },
     rarity: { type: String, default: "normal" },
