@@ -403,11 +403,12 @@ router.post("/work", verify, async(req, res) => {
             .json({ status: 400, message: "User job not found!" });
     }
 
-    const HOUR = 1000 * 60 * 60;
-    const anHourAgo = Date.now() - HOUR;
+    const fourHours = 1000 * 60 * 60 * 4;
+    const fourHoursAgo = Date.now() - fourHours;
+    const in24Hours = Date.now() + (1000 * 60 * 60 * 24);
 
-    if (user.lastWorkTime > anHourAgo) {
-        var seconds = Math.floor((user.lastWorkTime - (anHourAgo)) / 1000);
+    if (user.lastWorkTime > fourHoursAgo) {
+        var seconds = Math.floor((user.lastWorkTime - (fourHoursAgo)) / 1000);
         var minutes = Math.floor(seconds / 60);
         var hours = Math.floor(minutes / 60);
         var days = Math.floor(hours / 24);
@@ -417,6 +418,11 @@ router.post("/work", verify, async(req, res) => {
         seconds = seconds - (days * 24 * 60 * 60) - (hours * 60 * 60) - (minutes * 60);
 
         const ts = hours + ":" + minutes + ":" + seconds;
+
+        if (user.lastWorkTime > in24Hours) {
+            userJob.jobStreak = 0;
+            await userJob.save();
+        }
         return res
             .status(200)
             .json({ status: 400, message: "Can work in " + ts, data: ts });
@@ -445,11 +451,30 @@ router.post("/work", verify, async(req, res) => {
             .status(200)
             .json({ status: 400, message: "Job document fail" });
     }
+
+    if (userJob.jobStreak < 10 && userJob.jobStreak > 2) {
+        cAdd += 5;
+    } else if (userJob.jobStreak < 15) {
+        cAdd += 10;
+    } else if (userJob.jobStreak < 30) {
+        cAdd += 20;
+    } else if (userJob.jobStreak < 50) {
+        cAdd += 50;
+    } else if (userJob.jobStreak < 100) {
+        cAdd += 100
+    } else if (userJob.jobStreak < 365) {
+        cAdd += 500;
+    } else if (userJob.jobStreak < 500) {
+        cAdd += 1000;
+    }
+
     try {
+        userJob.jobStreak += 1;
         user.lastWorkTime = Date.now();
         user.coins += cAdd;
         user.edit = true;
         await user.save();
+        await userJob.save();
     } catch (err) {
         console.log("an error occured! " + err);
         return res
