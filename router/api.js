@@ -55,7 +55,7 @@ router.post("/apiToken", async(req, res) => {
     }
 });
 
-router.post("/getAttacksByUserMonster", verify, async(req, res) => {
+router.post("/giveMonsterToUser", verify, async(req, res) => {
     var user = await getUser(req.body);
 
     if (!user)
