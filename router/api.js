@@ -546,7 +546,7 @@ router.post("/work", verify, async(req, res) => {
     try {
         testJob(userJob);
         userJob.jobStreak += 1;
-        userJob.xp += getRandomInt(1, 10);
+        userJob.jobXP += getRandomInt(1, 10);
         user.lastWorkTime = Date.now();
         user.coins += cAdd;
         user.edit = true;
