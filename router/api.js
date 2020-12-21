@@ -56,6 +56,45 @@ router.post("/apiToken", async(req, res) => {
 });
 
 router.post("/getAttacksByUserMonster", verify, async(req, res) => {
+    var user = await getUser(req.body);
+
+    if (!user)
+        return res.status(200).json({ status: 400, message: "User not found!" });
+
+    if (await (await UserMonster.find({ user: user._id })).length >= user.maxMonsters)
+        return res.status(200).json({ status: 400, message: "Not enough space!" });
+
+    var mnster = await Monster.findById(req.body.monster);
+    if (!mnster) return res.status(200).json({ status: 400, message: "Monster not found" });
+
+    var umnster = new UserMonster({
+        rootMonster: mnster._id,
+        level: mnster.initialLevel,
+        hp: mnster.baseHp,
+        maxHp: mnster.baseHp,
+        user: user._id,
+        dv: getRandomInt(1, 15)
+    });
+
+
+    var u = undefined;
+    try {
+        u = await umnster.save();
+        await testMonster(u);
+        u = await umnster.save();
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(200).json({
+            status: 400,
+            message: "error while creating new user!",
+            error: err,
+        });
+    }
+
+    return res.status(200).json({ status: 200, message: "Added monster", data: mnster });
+});
+
+router.post("/getAttacksByUserMonster", verify, async(req, res) => {
     const monster = req.body.monster;
     const mnste = await UserMonster.findById(monster);
     if (!mnste) return res.status(200).json({ status: 400, message: "Monster not found!" });
@@ -292,6 +331,7 @@ router.post("/fight", verify, async(req, res) => {
             return res.status(200).json({ status: 400, message: "Monster not found! AI" });
         var atts = mroot.attacks;
         shuffle(atts);
+        console.log(atts[0]._id);
         attack = atts[0]._id;
     } else {
         if (!slot)
