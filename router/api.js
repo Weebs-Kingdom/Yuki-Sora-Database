@@ -463,7 +463,7 @@ router.post("/userItem", verify, async(req, res) => {
 });
 
 router.post("/work", verify, async(req, res) => {
-    var user = await getUser(req.body) coins;
+    var user = await getUser(req.body);
     if (!user) return res
         .status(200)
         .json({ status: 400, message: "User not found!" });
