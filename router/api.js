@@ -384,8 +384,8 @@ router.post("/getServer", verify, async(req, res) => {
 router.post("/xpOnMonster", verify, async(req, res) => {
     var monster = await UserMonster.findById(req.body.mid);
     monster.xp += req.body.xp;
-    monster = await monster.save();
     await testMonster(monster);
+    monster = await monster.save();
 
     res.status(200).json({ status: 200, data: monster });
 });
@@ -1112,7 +1112,7 @@ async function testMonster(monster) {
     const level = monster.level;
     const dv = monster.dv;
 
-    const levelUpXp = level * 7 + ((dv / 5) * 10);
+    var levelUpXp = level * 7 + ((dv / 5) * 10);
 
     const maxHp = rootMnster.baseHp + (level * ((((dv * level) / 100) + 10) / (((dv) / 100) + 10)));
     const dif = maxHp - monster.maxHp;
@@ -1120,9 +1120,10 @@ async function testMonster(monster) {
     monster.maxHp = maxHp;
     monster.hp = dif;
 
-    if (monster.xp >= levelUpXp) {
+    while (levelUpXp < monster.xp) {
         monster.xp -= levelUpXp;
         monster.level += 1;
+        levelUpXp = level * 7 + ((dv / 5) * 10);
     }
 
     if (rootMnster.evolves && rootMnster.evolveLvl) {
