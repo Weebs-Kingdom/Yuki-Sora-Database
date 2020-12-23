@@ -1013,7 +1013,7 @@ router.post("/attack", verify, async(req, res) => {
 
 router.get("/attack", verify, async(req, res) => {
     try {
-        const attacks = await Attack.find({}, { sort: { attackName: 1 } });
+        const attacks = await Attack.find({}).sort({ attackName: 1 });
         res.status(200).json({ status: 200, _id: attacks._id, message: "fatched all attacks", data: attacks });
     } catch (err) {
         console.log("an error occured! " + err);
