@@ -161,7 +161,7 @@ router.post("/getAttacks", verify, async(req, res) => {
 
     var attacks = [];
 
-    var lwerEvs = await Monster.find({ evolves: { $contains: mnster._id } });
+    var lwerEvs = await Monster.find({ evolves: { $contains: mnster._id } }, { sort: { attackName: 1 } });
     lwerEvs.push(mnster);
 
     for (let i = 0; i < lwerEvs.length; i++) {
@@ -732,7 +732,7 @@ router.post("/user", verify, async(req, res) => {
 
 router.get("/user", verify, async(req, res) => {
     try {
-        const users = await User.find({});
+        const users = await User.find({}, { sort: { username: 1 } });
         res.status(200).json({ status: 200, _id: users._id, message: "fatched all users", data: users });
     } catch (err) {
         console.log("an error occured! " + err);
@@ -829,7 +829,7 @@ router.delete("/server", verify, async(req, res) => {
 
 router.get("/job", verify, async(req, res) => {
     try {
-        const jobs = await Job.find({});
+        const jobs = await Job.find({}, { sort: { shortName: 1 } });
         res.status(200).json({ status: 200, message: "fatched all jobs", data: jobs });
     } catch (err) {
         console.log("an error occured! " + err);
@@ -899,7 +899,7 @@ router.post("/monster", verify, async(req, res) => {
 
 router.get("/monster", verify, async(req, res) => {
     try {
-        const monsters = await Monster.find({});
+        const monsters = await Monster.find({}, { sort: { name: 1 } });
         res.status(200).json({ status: 200, _id: monsters._id, message: "fatched all monsters", data: monsters });
     } catch (err) {
         console.log("an error occured! " + err);
@@ -943,7 +943,7 @@ router.delete("/monster", verify, async(req, res) => {
 
 router.get("/item", verify, async(req, res) => {
     try {
-        const items = await Item.find({});
+        const items = await Item.find({}, { sort: { itemName: 1 } });
         res.status(200).json({ status: 200, _id: items._id, message: "fatched all items", data: items });
     } catch (err) {
         console.log("an error occured! " + err);
@@ -1013,7 +1013,7 @@ router.post("/attack", verify, async(req, res) => {
 
 router.get("/attack", verify, async(req, res) => {
     try {
-        const attacks = await Attack.find({});
+        const attacks = await Attack.find({}, { sort: { attackName: 1 } });
         res.status(200).json({ status: 200, _id: attacks._id, message: "fatched all attacks", data: attacks });
     } catch (err) {
         console.log("an error occured! " + err);
