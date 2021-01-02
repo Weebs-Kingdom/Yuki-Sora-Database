@@ -493,14 +493,14 @@ router.post("/work", verify, async(req, res) => {
         seconds = seconds - (days * 24 * 60 * 60) - (hours * 60 * 60) - (minutes * 60);
 
         const ts = hours + ":" + minutes + ":" + seconds;
-
-        if (user.lastWorkTime > in24Hours) {
-            userJob.jobStreak = 0;
-            await userJob.save();
-        }
         return res
             .status(200)
             .json({ status: 400, message: "Can work in " + ts, data: ts });
+    }
+
+    if (user.lastWorkTime > in24Hours) {
+        userJob.jobStreak = 0;
+        await userJob.save();
     }
 
     var job;
