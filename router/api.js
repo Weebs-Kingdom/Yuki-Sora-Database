@@ -498,7 +498,7 @@ router.post("/work", verify, async(req, res) => {
             .json({ status: 400, message: "Can work in " + ts, data: ts });
     }
 
-    if (user.lastWorkTime < in24Hours) {
+    if (user.lastWorkTime > in24Hours) {
         userJob.jobStreak = 0;
         await userJob.save();
     }
