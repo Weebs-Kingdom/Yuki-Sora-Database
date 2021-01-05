@@ -1,6 +1,6 @@
 {
   "name": "Yuki-Sora-Database",
-  "version": "PATCH_1.1",
+  "version": "1.0.1",
   "description": "Database for Yuki-Sora",
   "main": "index.js",
   "scripts": {
