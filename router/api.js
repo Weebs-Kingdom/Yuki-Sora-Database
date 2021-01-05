@@ -1150,35 +1150,39 @@ async function testMonster(monster) {
 
 function testJob(ujob) {
     if (ujob.jobPosition == "trainee") {
-        if (ujob.xp > 50) {
-            ujob.level += 1;
+        if (ujob.jobXP > 50) {
+            ujob.jobXP -= 50;
+            ujob.jobLevel += 1;
         }
         if (ujob.level > 10) {
             ujob.jobPosition = "coworker";
-            ujob.xp = 0;
-            ujob.level = 1;
+            ujob.jobXP = 0;
+            ujob.jobLevel = 1;
         }
     } else if (ujob.jobPosition == "coworker") {
-        if (ujob.xp > 100) {
-            ujob.level += 1;
+        if (ujob.jobXP > 100) {
+            ujob.jobLevel += 1;
+            ujob.jobXP -= 100;
         }
-        if (ujob.level > 100) {
+        if (ujob.jobLevel > 100) {
             ujob.jobPosition = "coworker";
-            ujob.xp = 0;
-            ujob.level = 1;
+            ujob.jobXP = 0;
+            ujob.jobLevel = 1;
         }
     } else if (ujob.jobPosition == "headofdepartment") {
-        if (ujob.xp > 200) {
-            ujob.level += 1;
+        if (ujob.jobXP > 200) {
+            ujob.jobLevel += 1;
+            ujob.jobXP -= 200;
         }
-        if (ujob.level > 500) {
+        if (ujob.jobLevel > 500) {
             ujob.jobPosition = "coworker";
-            ujob.xp = 0;
-            ujob.level = 1;
+            ujob.jobXP = 0;
+            ujob.jobLevel = 1;
         }
     } else if (ujob.jobPosition == "manager") {
-        if (ujob.xp > 500) {
-            ujob.level += 1;
+        if (ujob.jobXP > 500) {
+            ujob.jobLevel += 1;
+            ujob.jobXP -= 500;
         }
     }
 }
