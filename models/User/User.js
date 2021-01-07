@@ -14,7 +14,9 @@ const userSchema = new mongoose.Schema({
     maxMonsters: { type: Number, default: 10 },
     maxItems: { type: Number, default: 40 },
     job: { type: mongoose.Schema.Types.ObjectId },
-    edit: Boolean
+    edit: Boolean,
+    isBooster: {type: Boolean, default: false},
+    boosterChannels: [String]
 });
 
 module.exports = mongoose.model("User", userSchema);

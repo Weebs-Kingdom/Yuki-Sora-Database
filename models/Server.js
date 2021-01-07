@@ -15,6 +15,8 @@ const userSchema = new mongoose.Schema({
     autoChannelIds: [String],
     primeRoleId: String,
     vipRoleId: String,
+    boosterRoleId: String,
+    boosterCategoryId: String,
     dungeonQueueMessage: String,
     dungeonEmoji: String,
     dungeonChan: [String],

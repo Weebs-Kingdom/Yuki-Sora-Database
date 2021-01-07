@@ -1,0 +1,11 @@
+Yuki-Sora-Database patched to version 1.0.2
+
+New features
+• Added booster database entrys
+•
+•
+
+Bugfix
+•
+•
+•
