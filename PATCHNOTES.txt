@@ -1,8 +1,8 @@
-Yuki-Sora-Database patched to version 1.0.2
+Yuki-Sora-Database patched to version 1.0.2 <alpha>
 
 New features
-• Added booster database entrys
-•
+• Autoremove feature
+• New attack level system
 •
 
 Bugfix

@@ -4,6 +4,7 @@ const appRouter = require('./router/app.js');
 const dotenv = require("dotenv");
 const database = require("./middleware/database");
 const parser = require("body-parser");
+const api = require("./router/api")
 
 var methodOverride = require('method-override')
 
@@ -18,6 +19,7 @@ app.use(parser.json());
 app.use(appRouter);
 
 database.connect();
+api.startThreads();
 console.log("Ready for action!");
 
 process.on('unhandledRejection', (reason, p) => {

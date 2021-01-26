@@ -11,6 +11,7 @@ const Monster = require("../models/Monster/Monster");
 const Job = require("../models/User/Job");
 const ApiToken = require("../models/ApiToken");
 const AiMonster = require("../models/Monster/AiMonster");
+const AMcon = require("../models/Monster/AttackMonsterCon");
 
 //middleware
 const verify = require("../middleware/verifyApiToken");
@@ -94,13 +95,17 @@ router.post("/giveMonsterToUser", verify, async (req, res) => {
     return res.status(200).json({status: 200, message: "Added monster", data: mnster});
 });
 
+router.post("/cleanup", async (req, res) => {
+    res.status(200).json({status: 200, message: await cleanUp()});
+});
+
 router.post("/getAttacksByUserMonster", verify, async (req, res) => {
     const monster = req.body.monster;
     const mnste = await UserMonster.findById(monster);
     if (!mnste) return res.status(200).json({status: 400, message: "Monster not found!"});
     const mnster = await Monster.findById(mnste.rootMonster);
 
-   var attacks = await getAttacksByMonster(mnster, mnste.level);
+    var attacks = await getAttacksByMonster(mnster, mnste.level);
 
     res.status(200).json({status: 200, data: attacks, message: "Fetched attacks from monster"});
 });
@@ -325,7 +330,7 @@ router.post("/fight", verify, async (req, res) => {
         if (!mroot)
             return res.status(200).json({status: 400, message: "Monster not found! AI"});
         var atts = await getAttacksByMonster(mroot, monster1.level);
-        if(atts.length <= 0){
+        if (atts.length <= 0) {
             return res.status(200).json({status: 400, message: "AI has no attacks!"});
         }
         shuffle(atts);
@@ -898,8 +903,21 @@ router.delete("/job", verify, async (req, res) => {
 
 router.post("/monster", verify, async (req, res) => {
     try {
+        const atts = req.body.attacks;
+        delete req.body.attacks;
+
         const cMonster = new Monster(req.body);
         const savedMonster = await cMonster.save();
+
+        for (const e of atts) {
+            const at = new AMcon({
+                attack: e.attack,
+                level: e.level,
+                monster: savedMonster._id
+            });
+
+            await at.save();
+        }
         res.status(200).json({status: 200, _id: savedMonster._id, message: "created monster"});
     } catch (err) {
         console.log("an error occured! " + err);
@@ -913,8 +931,20 @@ router.post("/monster", verify, async (req, res) => {
 
 router.get("/monster", verify, async (req, res) => {
     try {
-        const monsters = await Monster.find({}).sort({name: 1});
-        res.status(200).json({status: 200, _id: monsters._id, message: "fatched all monsters", data: monsters});
+        var mnsters = [];
+        var monsters = await Monster.find({}).sort({name: 1});
+        for (var e of monsters) {
+            var nats = await getAttacksByMonster(e, "all");
+            e = e.toJSON();
+            if(nats.length <= 0){
+                delete e.attacks;
+            } else {
+                e.attacks = nats;
+            }
+            mnsters.push(e);
+        }
+
+        res.status(200).json({status: 200, _id: monsters._id, message: "fatched all monsters", data: mnsters});
     } catch (err) {
         console.log("an error occured! " + err);
         res.status(200).json({
@@ -927,6 +957,45 @@ router.get("/monster", verify, async (req, res) => {
 
 router.patch("/monster", verify, async (req, res) => {
     try {
+        const ats = req.body.data.attacks;
+        const m = await Monster.findById(req.body._id);
+        const mats = await getAttacksByMonster(m, "all");
+
+        for (const e of ats) {
+            var update = true;
+            try {
+                const t = await AMcon.findOne({monster: req.body.data._id, attack: e.attack});
+                if (!t) {
+                    update = false;
+                    const at = new AMcon({
+                        attack: e.attack,
+                        level: e.level,
+                        monster: req.body._id
+                    });
+
+                    await at.save();
+                }
+            } catch (e) {
+
+            }
+
+            if (update == true)
+                await AMcon.findOneAndUpdate({monster: req.body.data._id, attack: e.attack}, e);
+        }
+
+        for (const e of mats) {
+            var found = false;
+            for (const ee of ats) {
+                if(ee._id == e._id)
+                    found = true;
+            }
+            if(found === false){
+                var a = await AMcon.findOne({attack: e._id, monster: req.body._id});
+                await a.remove();
+            }
+        }
+
+        delete req.body.data.attacks;
         const savedMonster = await Monster.findOneAndUpdate({_id: req.body._id},
             req.body.data
         );
@@ -1187,6 +1256,110 @@ function testJob(ujob) {
     }
 }
 
+async function cleanUp() {
+    var txt = "";
+    //item user cons
+    const itemUsrs = await ItemUserCon.find();
+    for (const e of itemUsrs) {
+        const i1 = await Item.findById(e.item);
+        const usr = await User.findById(e.user);
+
+        if (!usr || !i1) {
+            txt += "[-] Storage " + e._id + "\n";
+            await e.remove();
+        }
+    }
+
+
+    //User monsters
+    const userMnster = await UserMonster.find();
+    for (const e of userMnster) {
+        //If monster exist at all
+        const m = await Monster.findById(e.rootMonster);
+        const usr = await User.findById(e.user);
+        if (!m || !usr) {
+            await e.remove();
+            txt += "[-] Monster " + e.name + "\n";
+            continue;
+        }
+
+        //attacks up to date
+        var update = {};
+
+        var a1 = "a";
+        var a2 = "a";
+        var a3 = "a";
+        var a4 = "a";
+
+        if (e.a1 != null)
+            a1 = await Attack.findById(e.a1);
+        if (e.a2 != null)
+            a2 = await Attack.findById(e.a2);
+        if (e.a3 != null)
+            a3 = await Attack.findById(e.a3);
+        if (e.a4 != null)
+            a4 = await Attack.findById(e.a4);
+
+        if (!a1) {
+            update.a1 = null;
+            txt += "[-] atta1 " + e._id + " ";
+        }
+
+        if (!a2) {
+            update.a2 = null;
+            txt += "[-] atta2 " + e._id + " ";
+        }
+
+        if (!a3) {
+            update.a3 = null;
+            txt += "[-] atta3 " + e._id + " ";
+        }
+
+        if (!a4) {
+            update.a4 = null;
+            txt += "[-] atta4 " + e._id + " ";
+        }
+
+        if (!a1 || !a2 || !a3 || !a4) {
+            await UserMonster.updateOne({_id: e._id}, {$set: update})
+            txt += "\n";
+        }
+    }
+
+    //Monsters
+    const mnsters = await Monster.find();
+    for (const e of mnsters) {
+        var eupdate = [];
+        for (const evs of e.evolves) {
+            const m = await Monster.findById(evs);
+            if (m)
+                eupdate.push(evs);
+        }
+
+        if (eupdate.length != e.evolves.length) {
+            txt += "[~] evs " + e.name + " ";
+        }
+
+        if ((eupdate.length != e.evolves.length)) {
+            await Monster.updateOne({_id: e._id}, {$set: {evolves: eupdate}});
+            txt += "\n";
+        }
+    }
+
+    const cons = await AMcon.find();
+    for (const e of cons) {
+        const mnster = await Monster.findById(e.monster);
+        const att = await Attack.findById(e.attack);
+
+        if (!mnster || !att) {
+            txt += "[-] AM Con" + "\n";
+            await e.remove();
+        }
+    }
+
+    return txt;
+}
+
 async function getRandomItem(minRarity) {
     var items = await Item.find();
     shuffle(items);
@@ -1249,18 +1422,25 @@ async function getServer(body) {
     return server;
 }
 
-async function getAttacksByMonster(mnster, level){
+async function getAttacksByMonster(mnster, level) {
     var attacks = [];
 
     var lwerEvs = await Monster.find({evolves: {$in: [mnster._id]}});
     lwerEvs.push(mnster);
 
     for (let i = 0; i < lwerEvs.length; i++) {
-        const atts = lwerEvs[i].attacks;
+        const atts = await AMcon.find({monster: lwerEvs[i]._id});
         for (let j = 0; j < atts.length; j++) {
-            const att = await Attack.findById(atts[j]);
-            if (att.level <= level)
-                attacks.push(att);
+            if (level == "all" || atts[j].level <= level) {
+                var attack = await Attack.findById(atts[j].attack);
+                try {
+                    attack = attack.toJSON();
+                    attack.level = atts[j].level;
+                    attacks.push(attack);
+                } catch (e){
+
+                }
+            }
         }
     }
     return attacks;
@@ -1312,4 +1492,20 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function thread() {
+    setTimeout(() => async function () {
+            await cleanUp();
+            thread();
+        },
+        300);
+}
+
+function startThreads() {
+    console.log("starting update threads");
+    thread();
+}
+
 module.exports = router;
+module.exports.startThreads = function () {
+    startThreads()
+};
