@@ -560,7 +560,7 @@ router.post("/work", verify, async (req, res) => {
     }
 
     try {
-        testJob(userJob);
+        userJob = testJob(userJob);
         userJob.jobStreak += 1;
         userJob.jobXP += getRandomInt(1, 10);
         user.lastWorkTime = Date.now();
@@ -1254,6 +1254,7 @@ function testJob(ujob) {
             ujob.jobXP -= 500;
         }
     }
+    return ujob;
 }
 
 async function cleanUp() {
