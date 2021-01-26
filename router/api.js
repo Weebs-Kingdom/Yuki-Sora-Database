@@ -24,8 +24,8 @@ router.post("/apiToken", async (req, res) => {
 
     //if there is no pw
     //disabled!
-    //if (!pww)
-    //return res.status(401).json({ status: "401", message: "HAHAHA nope!" });
+    if (!pww)
+    return res.status(401).json({ status: "401", message: "HAHAHA nope!" });
 
     if (pw == pww) {
         var nToken = "";
