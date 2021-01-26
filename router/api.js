@@ -550,13 +550,13 @@ router.post("/work", verify, async (req, res) => {
     } else if (userJob.jobStreak < 30) {
         cAdd += 20;
     } else if (userJob.jobStreak < 50) {
-        cAdd += 50;
+        cAdd += 40;
     } else if (userJob.jobStreak < 100) {
-        cAdd += 100
+        cAdd += 70
     } else if (userJob.jobStreak < 365) {
-        cAdd += 300;
+        cAdd += 100;
     } else if (userJob.jobStreak < 500) {
-        cAdd += 500;
+        cAdd += 200;
     }
 
     try {
@@ -1219,37 +1219,37 @@ async function testMonster(monster) {
 
 function testJob(ujob) {
     if (ujob.jobPosition == "trainee") {
-        if (ujob.jobXP > 50) {
+        if (ujob.jobXP >= 50) {
             ujob.jobXP -= 50;
             ujob.jobLevel += 1;
         }
-        if (ujob.level > 10) {
+        if (ujob.level >= 10) {
             ujob.jobPosition = "coworker";
             ujob.jobXP = 0;
             ujob.jobLevel = 1;
         }
     } else if (ujob.jobPosition == "coworker") {
-        if (ujob.jobXP > 100) {
+        if (ujob.jobXP >= 100) {
             ujob.jobLevel += 1;
             ujob.jobXP -= 100;
         }
-        if (ujob.jobLevel > 100) {
+        if (ujob.jobLevel >= 100) {
             ujob.jobPosition = "coworker";
             ujob.jobXP = 0;
             ujob.jobLevel = 1;
         }
     } else if (ujob.jobPosition == "headofdepartment") {
-        if (ujob.jobXP > 200) {
+        if (ujob.jobXP >= 200) {
             ujob.jobLevel += 1;
             ujob.jobXP -= 200;
         }
-        if (ujob.jobLevel > 500) {
+        if (ujob.jobLevel >= 500) {
             ujob.jobPosition = "coworker";
             ujob.jobXP = 0;
             ujob.jobLevel = 1;
         }
     } else if (ujob.jobPosition == "manager") {
-        if (ujob.jobXP > 500) {
+        if (ujob.jobXP >= 500) {
             ujob.jobLevel += 1;
             ujob.jobXP -= 500;
         }
