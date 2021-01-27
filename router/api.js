@@ -1223,7 +1223,7 @@ function testJob(ujob) {
             ujob.jobXP -= 50;
             ujob.jobLevel += 1;
         }
-        if (ujob.level >= 10) {
+        if (ujob.jobLevel >= 10) {
             ujob.jobPosition = "coworker";
             ujob.jobXP = 0;
             ujob.jobLevel = 1;
