@@ -7,8 +7,10 @@ const userSchema = new mongoose.Schema({
     itemDescription: { type: String, require: true },
     itemType: { type: String, require: true },
     itemCanFound: { type: Boolean, default: false },
-    isitemCookable: { type: Boolean, require: true },
-    cooksInto: { type: mongoose.Schema.Types.ObjectId }
+    isItemCookable: { type: Boolean, require: true },
+    cooksInto: { type: mongoose.Schema.Types.ObjectId },
+    itemRoleConnection: String,
+    canSell: Boolean
 });
 
 module.exports = mongoose.model("Item", userSchema);

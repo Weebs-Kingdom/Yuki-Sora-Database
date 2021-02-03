@@ -56,6 +56,82 @@ router.post("/apiToken", async (req, res) => {
     }
 });
 
+router.post("/getLootBoxKey", verify, async (req, res) => {
+    var user = await getUser(req.body);
+    if (!user) return res
+        .status(200)
+        .json({status: 400, message: "User not found!"});
+
+        user.numberLootBoxKeys += 1;
+    try {
+        await user.save();
+    } catch (e) {
+        console.log("an error occured! " + e);
+        res.status(200).json({
+            status: 400,
+            message: "error while creating adding coins to user!",
+            error: e,
+        });
+    }
+    res.status(200).json({status: 200, data: user, message: "add coins"});
+});
+
+router.post("/openLootBox", verify, async (req, res) => {
+    var user = await getUser(req.body);
+    var rar = 0;
+    if (req.body.rarity)
+        rar = stringToRarityInt(req.body.rarity)
+
+    if (!user)
+        return res.status(200).json({status: 400, message: "User not found!"});
+
+    if(user.numberLootBoxKeys <=0)return res.status(200).json({status: 400, message: "No key left!"});
+
+    if (await (await UserMonster.find({user: user._id})).length >= user.maxMonsters)
+        return res.status(200).json({status: 400, message: "Not enough space!"});
+
+    var mnsters = await Monster.find({});
+    mnsters = shuffle(mnsters);
+    var mnster = undefined;
+    for (let i = 0; i < mnsters.length; i++) {
+        var element = mnsters[i];
+        if (stringToRarityInt(element.rarity) >= rar && element.shown) {
+            mnster = element;
+            break;
+        }
+    }
+    if (!mnster)
+        return res.status(200).json({status: 400, message: "No monster with rarity found!"});
+
+    var umnster = new UserMonster({
+        rootMonster: mnster._id,
+        level: mnster.initialLevel,
+        hp: mnster.baseHp,
+        maxHp: mnster.baseHp,
+        user: user._id,
+        dv: getRandomInt(1, 15)
+    });
+
+
+    var u = undefined;
+    try {
+        u = await umnster.save();
+        u = await testMonster(u);
+        u = await umnster.save();
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(200).json({
+            status: 400,
+            message: "error while creating new user!",
+            error: err
+        });
+    }
+
+    user.numberLootBoxKeys -= 1;
+    await user.save();
+    return res.status(200).json({status: 200, message: "Added monster", data: mnster});
+});
+
 router.post("/giveMonsterToUser", verify, async (req, res) => {
     var user = await getUser(req.body);
 
@@ -81,7 +157,7 @@ router.post("/giveMonsterToUser", verify, async (req, res) => {
     var u = undefined;
     try {
         u = await umnster.save();
-        await testMonster(u);
+        u = await testMonster(u);
         u = await umnster.save();
     } catch (err) {
         console.log("an error occured! " + err);
@@ -466,7 +542,12 @@ router.post("/getUserMonsters", verify, async (req, res) => {
 router.post("/userItem", verify, async (req, res) => {
     const si = req.body.item;
     const amount = req.body.amount;
-    var item = await Item.findById(si);
+    var item = undefined;
+    try {
+        item = await Item.findById(si)
+    } catch (e){
+        return res.status(200).json({status: 400, message: "item not found!"});
+    }
     if (!item)
         return res.status(200).json({status: 400, message: "item not found!"});
     var user = await getUser(req.body);
@@ -712,11 +793,10 @@ router.post("/coins", verify, async (req, res) => {
         .json({status: 400, message: "User not found!"});
 
     if (coins < 0) {
-        if ((user.coins - coins) < 0) {
-            return res
+        const di = (user.coins + coins);
+        if (di < 0) return res
                 .status(200)
                 .json({status: 400, message: "Not enough money!"});
-        }
     }
 
     user.coins += coins;
@@ -724,11 +804,11 @@ router.post("/coins", verify, async (req, res) => {
     try {
         await user.save();
     } catch (e) {
-        console.log("an error occured! " + err);
+        console.log("an error occured! " + e);
         res.status(200).json({
             status: 400,
             message: "error while creating adding coins to user!",
-            error: err,
+            error: e
         });
     }
     res.status(200).json({status: 200, data: user, message: "add coins"});
@@ -1215,6 +1295,7 @@ async function testMonster(monster) {
             await testMonster(monster);
         }
     }
+    return monster;
 }
 
 function testJob(ujob) {
@@ -1493,7 +1574,7 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function thread() {
+async function thread() {
     setTimeout(() => async function () {
             await cleanUp();
             thread();
