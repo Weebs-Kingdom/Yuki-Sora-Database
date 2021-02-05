@@ -19,7 +19,7 @@ app.use(parser.json());
 app.use(appRouter);
 
 database.connect();
-api.startThreads();
+api.startSchedules();
 console.log("Ready for action!");
 
 process.on('unhandledRejection', (reason, p) => {

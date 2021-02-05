@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const schedule = require('node-schedule');
 
 //Models
 const User = require("../models/User/User");
@@ -1574,20 +1575,16 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-async function thread() {
-    setTimeout(() => async function () {
-            await cleanUp();
-            thread();
-        },
-        300);
-}
-
-function startThreads() {
-    console.log("starting update threads");
-    thread();
+function startSchedules() {
+    const job = schedule.scheduleJob({second: 30}, async function(fireDate){
+        const t = await cleanUp();
+        if(t)
+            if(t.length > 1)
+                console.log(t);
+    });
 }
 
 module.exports = router;
-module.exports.startThreads = function () {
-    startThreads()
+module.exports.startSchedules = function () {
+    startSchedules()
 };
