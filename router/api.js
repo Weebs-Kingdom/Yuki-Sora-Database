@@ -468,8 +468,8 @@ router.post("/fight", verify, async (req, res) => {
                 monster1.usage[3] -= 1;
                 break;
         }
+        await UserMonster.updateOne({_id: monster1._id}, {$set:{usage: monster1.usage}});
     }
-
     attack = await Attack.findById(attack);
     const dmg = calcDmg(attack, monster1, monster2);
 

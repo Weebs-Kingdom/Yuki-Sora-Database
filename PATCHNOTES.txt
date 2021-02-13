@@ -1,11 +1,11 @@
 Yuki-Sora-Database patched to version 1.0.2 <alpha>
 
 New features
-• Lootbox logic
+•
 •
 •
 
 Bugfix
-•
+• Fixed attack usage problem
 •
 •
