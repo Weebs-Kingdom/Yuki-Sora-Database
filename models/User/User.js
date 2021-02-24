@@ -17,7 +17,8 @@ const userSchema = new mongoose.Schema({
     edit: Boolean,
     isBooster: {type: Boolean, default: false},
     boosterChannels: [String],
-    numberLootBoxKeys: {type: Number, default: 1}
+    numberLootBoxKeys: {type: Number, default: 1},
+    energy: {type: Number, default: 20}
 });
 
 module.exports = mongoose.model("User", userSchema);

@@ -13,6 +13,9 @@ const Job = require("../models/User/Job");
 const ApiToken = require("../models/ApiToken");
 const AiMonster = require("../models/Monster/AiMonster");
 const AMcon = require("../models/Monster/AttackMonsterCon");
+const Recipe = require("../models/Items/crafting/CraftingRecipe");
+const Topic = require("../models/Topics/Topic");
+const TCategory = require("../models/Topics/TCategory");
 
 //middleware
 const verify = require("../middleware/verifyApiToken");
@@ -468,7 +471,7 @@ router.post("/fight", verify, async (req, res) => {
                 monster1.usage[3] -= 1;
                 break;
         }
-        await UserMonster.updateOne({_id: monster1._id}, {$set:{usage: monster1.usage}});
+        await UserMonster.updateOne({_id: monster1._id}, {$set: {usage: monster1.usage}});
     }
     attack = await Attack.findById(attack);
     const dmg = calcDmg(attack, monster1, monster2);
@@ -846,6 +849,262 @@ router.post("/user", verify, async (req, res) => {
     }
 });
 
+router.post("/getRandomTopic", verify, async (req, res) => {
+    var tp = req.body.topic;
+    var nsfw = req.body.nsfw;
+    try {
+        tp = tp.toString().toLowerCase();
+    } catch (e) {
+    }
+    var topics = [];
+
+    if (nsfw) {
+        var cs;
+        if (tp && tp != "")
+            cs = await TCategory.find({categoryName: {$regex: tp, $options: 'i'}});
+        else if(tp == "g" || tp == "general" || "normal" || "all")
+            cs = await TCategory.find();
+
+        cs = getIds(cs);
+
+        topics = await Topic.find({category: {$in: cs}});
+    } else {
+        var cs;
+        if (tp && tp != "")
+            cs = await TCategory.find({isNsfw: false, categoryName: {$regex: tp, $options: 'i'}});
+        else if(tp == "g" || tp == "general" || "normal" || "all")
+            cs = await TCategory.find({isNsfw: false});
+
+        cs = getIds(cs);
+
+        const tps = await Topic.find({category: {$in: cs}});
+        topics = tps;
+    }
+
+    var topic;
+    try {
+        topic = topics[getRandomInt(0, topics.length)];
+    } catch (e){
+        return res.status(200).json({
+            status: 400,
+            message: "error while fetching random topic",
+            error: e,
+        });
+    }
+
+    if(!topic){
+        return res.status(200).json({
+            status: 400,
+            message: "error while fetching random topic"
+        });
+    }
+    res.status(200).json({status: 200, message: "get random topic", data: topic});
+});
+
+function getIds(doc) {
+    var ids = [];
+    for (const e of doc) {
+        ids.push(e._id);
+    }
+    return ids;
+}
+
+router.post("/topiccategory", verify, async (req, res) => {
+    try {
+        const cCategory = new TCategory(req.body);
+        const savedCategory = await cCategory.save();
+        res.status(200).json({status: 200, _id: savedCategory._id, message: "created category"});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(200).json({
+            status: 400,
+            message: "error while creating new category!",
+            error: err,
+        });
+    }
+});
+
+router.get("/topiccategory", verify, async (req, res) => {
+    try {
+        const topic = await TCategory.find({});
+        res.status(200).json({status: 200, _id: topic._id, message: "fatched all categorys", data: topic});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(200).json({
+            status: 400,
+            message: "error while fatching categorys!",
+            error: err,
+        });
+    }
+});
+
+router.patch("/topiccategory", verify, async (req, res) => {
+    try {
+        const savedTopic = await TCategory.findOneAndUpdate({_id: req.body._id}, req.body.data);
+        res.status(200).json({status: 200, _id: savedTopic._id, message: "patched category"});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(200).json({
+            status: 400,
+            message: "error while patching category!",
+            error: err,
+        });
+    }
+});
+
+router.delete("/topiccategory", verify, async (req, res) => {
+    try {
+        const savedTopic = await TCategory.remove({_id: req.body._id});
+        res.status(200).json({status: 200, message: "removed"});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res
+            .status(200)
+            .json({status: 400, message: "error while deleting category!", error: err});
+    }
+});
+
+router.post("/topic", verify, async (req, res) => {
+    try {
+        const cTopic = new Topic(req.body);
+        const savedTopic = await cTopic.save();
+        res.status(200).json({status: 200, _id: savedTopic._id, message: "created topic"});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(200).json({
+            status: 400,
+            message: "error while creating new topic!",
+            error: err,
+        });
+    }
+});
+
+router.get("/topic", verify, async (req, res) => {
+    try {
+        const topic = await getComplexTopic(await Topic.find({}));
+        res.status(200).json({status: 200, message: "fatched all topics", data: topic});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(200).json({
+            status: 400,
+            message: "error while fatching topics!",
+            error: err,
+        });
+    }
+});
+
+async function getComplexTopic(arr){
+    var res = [];
+    for (const e of arr) {
+        var tp = await TCategory.find({_id: {$in: e.category}});
+        var tps = [];
+        for (const el of tp) {
+            var js = el.toJSON();
+            tps.push(js);
+        }
+        var ai = e.toJSON();
+        ai.category = tps;
+        res.push(ai);
+    }
+    return res;
+}
+
+router.patch("/topic", verify, async (req, res) => {
+    try {
+        const savedTopic = await Topic.findOneAndUpdate({_id: req.body._id}, req.body.data);
+        res.status(200).json({status: 200, _id: savedTopic._id, message: "patched topic"});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(200).json({
+            status: 400,
+            message: "error while patching topic!",
+            error: err,
+        });
+    }
+});
+
+router.delete("/topic", verify, async (req, res) => {
+    try {
+        const savedTopic = await Topic.remove({_id: req.body._id});
+        res.status(200).json({status: 200, message: "removed"});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res
+            .status(200)
+            .json({status: 400, message: "error while deleting topic!", error: err});
+    }
+});
+
+router.post("/getRecipe", verify, async (req, res) => {
+    try {
+        var recipe = await Recipe.findById(req.body._id);
+        recipe = await getComplexRecipe(recipe);
+        res.status(200).json({status: 200, _id: recipe._id, message: "fatched recipe", data: recipe});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(200).json({
+            status: 400,
+            message: "error while fatching recipe!",
+            error: err,
+        });
+    }
+});
+
+router.post("/recipe", verify, async (req, res) => {
+    try {
+        const cRecipe = new Recipe(req.body);
+        const savedRecipe = await cRecipe.save();
+        res.status(200).json({status: 200, _id: savedRecipe._id, message: "created recipe"});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(200).json({
+            status: 400,
+            message: "error while creating new recipe!",
+            error: err,
+        });
+    }
+});
+
+router.get("/recipe", verify, async (req, res) => {
+    try {
+        const recipe = await Recipe.find({});
+        res.status(200).json({status: 200, _id: recipe._id, message: "fatched all recipes", data: recipe});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(200).json({
+            status: 400,
+            message: "error while fatching recipes!",
+            error: err,
+        });
+    }
+});
+
+router.patch("/recipe", verify, async (req, res) => {
+    try {
+        const savedRecipe = await Recipe.findOneAndUpdate({_id: req.body._id}, req.body.data);
+        res.status(200).json({status: 200, _id: savedRecipe._id, message: "patched recipe"});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(200).json({
+            status: 400,
+            message: "error while patching recipe!",
+            error: err,
+        });
+    }
+});
+
+router.delete("/recipe", verify, async (req, res) => {
+    try {
+        const savedRecipe = await Recipe.remove({_id: req.body._id});
+        res.status(200).json({status: 200, message: "removed"});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res
+            .status(200)
+            .json({status: 400, message: "error while deleting recipe!", error: err});
+    }
+});
+
 router.get("/user", verify, async (req, res) => {
     try {
         const users = await User.find({}).sort({username: 1});
@@ -1121,6 +1380,7 @@ router.delete("/monster", verify, async (req, res) => {
     }
 });
 
+
 router.get("/item", verify, async (req, res) => {
     try {
         const items = await Item.find({}).sort({itemName: 1});
@@ -1230,6 +1490,21 @@ router.delete("/attack", verify, async (req, res) => {
             .json({status: 400, message: "error while deleting attack!", error: err});
     }
 });
+
+async function getComplexRecipe(recipe) {
+    var newIts = [];
+    for (let i = 0; i < recipe.items.length; i++) {
+        var item = await Item.findById(recipe.items[i]);
+        item = item.toJSON()
+        item.amount = recipe.itemCount[i];
+        newIts.push(item);
+    }
+    recipe = recipe.toJSON();
+    recipe.items = newIts;
+    recipe.result = await Item.findById(recipe.result);
+    delete recipe.itemCount;
+    return recipe;
+}
 
 async function giveUserItem(amount, item, user) {
 

@@ -1,11 +1,11 @@
 Yuki-Sora-Database patched to version 1.0.2 <alpha>
 
 New features
-•
-•
-•
+• Create topics and labels
+• Get a random topic
+• Implementation of crafting
 
 Bugfix
-• Fixed attack usage problem
+•
 •
 •
