@@ -20,7 +20,8 @@ const userSchema = new mongoose.Schema({
     dungeonQueueMessage: String,
     dungeonEmoji: String,
     dungeonChan: [String],
-    dungeonChanRoles: [String]
+    dungeonChanRoles: [String],
+    gamingChannels: [String]
 });
 
 module.exports = mongoose.model("Server", userSchema);
