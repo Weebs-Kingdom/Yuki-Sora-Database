@@ -1607,7 +1607,7 @@ function testJob(ujob) {
             ujob.jobXP -= 100;
         }
         if (ujob.jobLevel >= 100) {
-            ujob.jobPosition = "coworker";
+            ujob.jobPosition = "headofdepartment";
             ujob.jobXP = 0;
             ujob.jobLevel = 1;
         }
@@ -1617,7 +1617,7 @@ function testJob(ujob) {
             ujob.jobXP -= 200;
         }
         if (ujob.jobLevel >= 500) {
-            ujob.jobPosition = "coworker";
+            ujob.jobPosition = "manager";
             ujob.jobXP = 0;
             ujob.jobLevel = 1;
         }
