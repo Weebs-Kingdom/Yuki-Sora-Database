@@ -1067,8 +1067,12 @@ router.post("/recipe", verify, async (req, res) => {
 
 router.get("/recipe", verify, async (req, res) => {
     try {
-        const recipe = await Recipe.find({});
-        res.status(200).json({status: 200, _id: recipe._id, message: "fatched all recipes", data: recipe});
+        var recipe = await Recipe.find({});
+        var newArr = [];
+        for (const e of recipe) {
+            newArr.push(await getComplexRecipe(e));
+        }
+        res.status(200).json({status: 200, message: "fatched all recipes", data: newArr});
     } catch (err) {
         console.log("an error occured! " + err);
         res.status(200).json({
@@ -1502,7 +1506,6 @@ async function getComplexRecipe(recipe) {
     recipe = recipe.toJSON();
     recipe.items = newIts;
     recipe.result = await Item.findById(recipe.result);
-    delete recipe.itemCount;
     return recipe;
 }
 
