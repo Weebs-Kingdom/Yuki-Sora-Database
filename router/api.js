@@ -16,6 +16,8 @@ const AMcon = require("../models/Monster/AttackMonsterCon");
 const Recipe = require("../models/Items/crafting/CraftingRecipe");
 const Topic = require("../models/Topics/Topic");
 const TCategory = require("../models/Topics/TCategory");
+const RedeemCode = require("../models/Redeem/RedeemCode");
+const RedeemUserCon = require("../models/Redeem/RedeemUserCon");
 
 //middleware
 const verify = require("../middleware/verifyApiToken");
@@ -58,6 +60,90 @@ router.post("/apiToken", async (req, res) => {
     } else {
         res.status(401).json({status: "401", message: "HAHAHA nope!"});
     }
+});
+
+router.post("/redeemcode", verify, async (req, res) => {
+    var user = await getUser(req.body);
+    if (!user) return res.status(200).json({status: 400, message: "User not found!"});
+    var redeemCode = await RedeemCode.findOne({code: req.body.code});
+
+    if (!redeemCode) return res.status(200).json({status: 400, message: "Redeem code not found!"});
+
+    var userCon = await RedeemUserCon.findOne({user: user._id, redeemCode: redeemCode._id});
+
+    var canUse = true;
+    if (userCon) {
+        if (userCon.used >= redeemCode.maxUserUsage) {
+            canUse = false;
+        }
+    }
+    if (redeemCode.hasMaxUsage) {
+        if (redeemCode.used >= redeemCode.maxUsage) {
+            canUse = false;
+        }
+    }
+
+    if (redeemCode.doExpire) {
+        var now = new Date();
+        if (now.after(redeemCode.expires)) {
+            canUse = false;
+            if (redeemCode.doExpire)
+                await redeemCode.remove();
+        }
+    }
+
+    if (!canUse) return res.status(200).json({status: 400, message: "Cant use that redeem code anymore!"});
+    var redeemText = "";
+    var instructions = JSON.parse(redeemCode.instructions);
+    for (const e of instructions) {
+        var inst = e.inst;
+        switch (inst) {
+            case "coin":
+                user.coins += e.data;
+                redeemText += "got " + e.data + " coins, ";
+                break;
+
+            case "monster":
+                var mnster = await Monster.find({_id: e.data});
+                if (!mnster) break;
+                await giveUserMonster(mnster, user);
+                redeemText += "got " + mnster.name + ", ";
+                break;
+
+            case "item":
+                var item = await Item.find({_id: e.data});
+                if (!item) break;
+                await giveUserItem(e.amount, item, user);
+                redeemText += "got " + item.itemName + "(" + e.amount + "), ";
+                break;
+
+            case "energy":
+                user.energy += e.data;
+                redeemText += "got " + e.data + " energy, ";
+                break;
+
+            case "loot":
+                user.numberLootBoxKeys += e.data;
+                redeemText += "got " + e.data + " lootbox keys, ";
+                break;
+        }
+    }
+    redeemCode.used++;
+    await redeemCode.save();
+    await user.save();
+    if (userCon) {
+        userCon.used++;
+        await userCon.save();
+    } else {
+        var con = new RedeemUserCon({
+            redeemCode: redeemCode._id,
+            user: user._id,
+            used: 1
+        });
+        await con.save();
+    }
+    redeemText = redeemText.substring(0, redeemText.length - 2);
+    res.status(200).json({status: 200, data: redeemText, message: "All redeem items are activated!"});
 });
 
 router.post("/getLootBoxKey", verify, async (req, res) => {
@@ -148,6 +234,12 @@ router.post("/giveMonsterToUser", verify, async (req, res) => {
     var mnster = await Monster.findById(req.body.monster);
     if (!mnster) return res.status(200).json({status: 400, message: "Monster not found"});
 
+    await giveUserMonster(mnster, user);
+
+    return res.status(200).json({status: 200, message: "Added monster", data: mnster});
+});
+
+async function giveUserMonster(mnster, user) {
     var umnster = new UserMonster({
         rootMonster: mnster._id,
         level: mnster.initialLevel,
@@ -165,15 +257,9 @@ router.post("/giveMonsterToUser", verify, async (req, res) => {
         u = await umnster.save();
     } catch (err) {
         console.log("an error occured! " + err);
-        res.status(200).json({
-            status: 400,
-            message: "error while creating new user!",
-            error: err,
-        });
     }
-
-    return res.status(200).json({status: 200, message: "Added monster", data: mnster});
-});
+    return u;
+}
 
 router.post("/cleanup", async (req, res) => {
     res.status(200).json({status: 200, message: await cleanUp()});
@@ -559,6 +645,91 @@ router.post("/getUserMonsters", verify, async (req, res) => {
     res.status(200).json({status: 200, data: monsters});
 });
 
+router.post("/getUserRecipes", verify, async (req, res) => {
+    const user = await getUser(req.body);
+    if (!user)
+        return res.status(200).json({status: 400, message: "User not found!"});
+
+
+    res.status(200).json({status: 200, data: await getUserRecipes(user), message: "fetched users crafting recipes"});
+});
+
+router.post("/punch", verify, async (req, res) => {
+    var user = await getUser(req.body);
+    if (!user) return res.status(200).json({status: 400, message: "User not found!"});
+    if (user.energy >= 1) {
+        user.energy--;
+        user.save();
+        return res.status(200).json({status: 200, message: "Successfully"});
+    } else {
+        return res.status(200).json({status: 400, message: "Not enough energy"});
+    }
+});
+
+async function getUserRecipes(user) {
+    var recipes = [];
+    if (user.craftingRecipes != null && user.craftingRecipes != undefined)
+        for (const e of user.craftingRecipes) {
+            recipes.push(await getComplexRecipe(await Recipe.findById(e)));
+        }
+
+    var allRecipes = await Recipe.find({});
+    for (const e of allRecipes) {
+        if (e.commonRecipe)
+            recipes.push(await getComplexRecipe(e));
+    }
+    return recipes;
+}
+
+router.post("/craft", verify, async (req, res) => {
+    var user = await getUser(req.body);
+    if (!user) return res.status(200).json({status: 400, message: "User not found!"});
+    var recipeId = req.body.recipe;
+    var recs = await getUserRecipes(user);
+    var found = false;
+    var recipe = undefined;
+    for (const e of recs) {
+        if (e._id == recipeId) {
+            found = true;
+            recipe = e;
+            break;
+        }
+    }
+
+    if (!found) return res.status(200).json({status: 400, message: "Cant craft that recipe!"});
+
+    var inventory = await ItemUserCon.find({user: user._id});
+    var hasItems = true;
+    for (const e of recipe.items) {
+        var hasAItems = false;
+        for (const invItem of inventory) {
+            if (invItem.item.toString() == e._id.toString()) {
+                if (invItem.amount >= e.amount) {
+                    hasAItems = true;
+                    break;
+                }
+            }
+        }
+
+        if (!hasAItems) {
+            hasItems = false;
+            break
+        }
+    }
+
+    if (!hasItems) return res.status(200).json({status: 400, message: "Don't have the items!"});
+
+    for (const e of recipe.items) {
+        await giveUserItem(e.amount * -1, e._id, user);
+    }
+
+    var amount = recipe.resultAmount;
+    if(amount == undefined || amount == null)
+        amount = 1;
+    await giveUserItem(amount, recipe.result._id, user);
+    res.status(200).json({status: 200, message: "Crafted!"});
+});
+
 router.post("/userItem", verify, async (req, res) => {
     const si = req.body.item;
     const amount = req.body.amount;
@@ -862,7 +1033,7 @@ router.post("/getRandomTopic", verify, async (req, res) => {
         var cs;
         if (tp && tp != "")
             cs = await TCategory.find({categoryName: {$regex: tp, $options: 'i'}});
-        else if(tp == "g" || tp == "general" || "normal" || "all")
+        else if (tp == "g" || tp == "general" || "normal" || "all")
             cs = await TCategory.find();
 
         cs = getIds(cs);
@@ -872,7 +1043,7 @@ router.post("/getRandomTopic", verify, async (req, res) => {
         var cs;
         if (tp && tp != "")
             cs = await TCategory.find({isNsfw: false, categoryName: {$regex: tp, $options: 'i'}});
-        else if(tp == "g" || tp == "general" || "normal" || "all")
+        else if (tp == "g" || tp == "general" || "normal" || "all")
             cs = await TCategory.find({isNsfw: false});
 
         cs = getIds(cs);
@@ -884,7 +1055,7 @@ router.post("/getRandomTopic", verify, async (req, res) => {
     var topic;
     try {
         topic = topics[getRandomInt(0, topics.length)];
-    } catch (e){
+    } catch (e) {
         return res.status(200).json({
             status: 400,
             message: "error while fetching random topic",
@@ -892,7 +1063,7 @@ router.post("/getRandomTopic", verify, async (req, res) => {
         });
     }
 
-    if(!topic){
+    if (!topic) {
         return res.status(200).json({
             status: 400,
             message: "error while fetching random topic"
@@ -993,7 +1164,7 @@ router.get("/topic", verify, async (req, res) => {
     }
 });
 
-async function getComplexTopic(arr){
+async function getComplexTopic(arr) {
     var res = [];
     for (const e of arr) {
         var tp = await TCategory.find({_id: {$in: e.category}});
@@ -1261,6 +1432,61 @@ router.delete("/job", verify, async (req, res) => {
     }
 });
 
+router.get("/redeem", verify, async (req, res) => {
+    try {
+        const codes = await RedeemCode.find({}).sort({shortname: 1});
+        res.status(200).json({status: 200, message: "fatched all redeem codes", data: codes});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(200).json({
+            status: 400,
+            message: "error while fatching redeem codes!",
+            error: err,
+        });
+    }
+});
+
+router.post("/redeem", verify, async (req, res) => {
+    try {
+        const cCode = new RedeemCode(req.body);
+        const savedCode = await cCode.save();
+        res.status(200).json({status: 200, _id: savedCode._id, message: "created redeem code"});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(200).json({
+            status: 400,
+            message: "error while creating new job!",
+            error: err,
+        });
+    }
+});
+
+router.patch("/redeem", verify, async (req, res) => {
+    try {
+        const savedCode = await RedeemCode.findOneAndUpdate({_id: req.body._id}, req.body.data);
+        res.status(200).json({status: 200, _id: savedCode._id, message: "patched redeem code"});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res.status(200).json({
+            status: 400,
+            message: "error while patching redeem code!",
+            error: err,
+        });
+    }
+});
+
+router.delete("/redeem", verify, async (req, res) => {
+    try {
+        const savedCode = await RedeemCode.remove({_id: req.body._id});
+        res.status(200).json({status: 200, message: "removed"});
+    } catch (err) {
+        console.log("an error occured! " + err);
+        res
+            .status(200)
+            .json({status: 400, message: "error while deleting redeem code!", error: err});
+    }
+});
+
 router.post("/monster", verify, async (req, res) => {
     try {
         const atts = req.body.attacks;
@@ -1505,6 +1731,7 @@ async function getComplexRecipe(recipe) {
     }
     recipe = recipe.toJSON();
     recipe.items = newIts;
+    recipe.resultAmount = recipe.resultAmount;
     recipe.result = await Item.findById(recipe.result);
     return recipe;
 }
@@ -1521,7 +1748,7 @@ async function giveUserItem(amount, item, user) {
                 .json({status: 400, message: "Can't have negative amount of items"});
 
         if (st.amount == 0) {
-            st.remove();
+            await st.remove();
         }
 
         try {
@@ -1635,6 +1862,37 @@ function testJob(ujob) {
 
 async function cleanUp() {
     var txt = "";
+    var date = new Date();
+
+    //Redeem codes
+    const codes = await RedeemCode.find();
+    for (const e of codes) {
+        if (e.doExpire)
+            if (date.before(e.expires))
+                if (e.autoDelete) {
+                    e.remove();
+                    txt += "[-] Redeemcode " + e.code + "\n";
+                }
+        if (e.hasMaxUsage)
+            if (e.used >= e.maxUsage)
+                if (e.autoDelete) {
+                    e.remove();
+                    txt += "[-] Redeemcode " + e.code + "\n";
+                }
+    }
+
+    //Redeem code connections
+    const rcodes = await RedeemUserCon.find();
+    for (const e of rcodes) {
+        const u = await User.findById(e.user);
+        const code = await RedeemCode.findById(e.redeemCode);
+
+        if (!u || !code) {
+            await e.remove();
+            txt += "[-] Redeemcodecon " + e._id + "\n";
+        }
+    }
+
     //item user cons
     const itemUsrs = await ItemUserCon.find();
     for (const e of itemUsrs) {
@@ -1875,6 +2133,16 @@ function startSchedules() {
         if (t)
             if (t.length > 1)
                 console.log(t);
+    });
+
+    const userEnergy = schedule.scheduleJob({hour: 1}, async function (fireDate) {
+        const users = User.find({});
+        for (let e of users) {
+            if (e.maxEnergy > e.energy) {
+                e.energy++;
+                await e.save();
+            }
+        }
     });
 }
 

@@ -5,7 +5,8 @@ const userSchema = new mongoose.Schema({
     itemCount: [Number],
     commonRecipe: Boolean,
     hammerPunches: Number,
-    result: mongoose.Schema.Types.ObjectId
+    result: mongoose.Schema.Types.ObjectId,
+    resultAmount: {type: Number, default: 1}
 });
 
 module.exports = mongoose.model("CraftingRecipe", userSchema);
