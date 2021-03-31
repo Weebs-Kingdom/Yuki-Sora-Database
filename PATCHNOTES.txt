@@ -1,11 +1,11 @@
-Yuki-Sora-Database patched to version 1.0.2 <alpha>
+Yuki-Sora-Database patched to version 1.0.3
 
 New features
-• Create topics and labels
-• Get a random topic
-• Implementation of crafting
+• Redeem codes
+• New auto clear database features
+•
 
 Bugfix
-•
+• A LOT
 •
 •
