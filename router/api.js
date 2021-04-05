@@ -1867,7 +1867,7 @@ async function cleanUp() {
     const codes = await RedeemCode.find();
     for (const e of codes) {
         if (e.doExpire)
-            if (date.before(e.expires))
+            if (date > e.expires)
                 if (e.autoDelete) {
                     e.remove();
                     txt += "[-] Redeemcode " + e.code + "\n";
