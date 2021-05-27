@@ -1,6 +1,6 @@
 {
   "name": "Yuki-Sora-Database",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Database for Yuki-Sora",
   "main": "index.js",
   "scripts": {
@@ -15,6 +15,7 @@
     "express": "^4.17.1",
     "method-override": "^3.0.0",
     "mongoose": "^5.12.11",
+    "node-fetch": "^2.6.1",
     "node-schedule": "^2.0.0"
   }
 }

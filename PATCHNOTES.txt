@@ -1,11 +1,11 @@
-Yuki-Sora-Database patched to version 1.0.3
+Yuki-Sora-Database patched to version 1.0.4
 
 New features
-• Redeem codes
-• New auto clear database features
+• User info
+•
 •
 
 Bugfix
-• A LOT
+•
 •
 •
