@@ -1,7 +1,7 @@
-Yuki-Sora-Database patched to version 1.0.4
+Yuki-Sora-Database patched to version 1.0.5
 
 New features
-• User info
+• Job leveling
 •
 •
 
