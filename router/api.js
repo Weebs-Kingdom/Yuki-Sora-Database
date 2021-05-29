@@ -868,7 +868,7 @@ router.post("/work", verify, async (req, res) => {
     try {
         userJob = testJob(userJob);
         userJob.jobStreak += 1;
-        userJob.jobXP += getRandomInt(1, 10);
+        userJob.jobXP += getRandomInt(4, 20);
         user.lastWorkTime = Date.now();
         user.coins += cAdd;
         user.edit = true;
@@ -1866,21 +1866,21 @@ function testJob(ujob) {
             ujob.jobLevel = 1;
         }
     } else if (ujob.jobPosition == "coworker") {
-        if (ujob.jobXP >= 100) {
+        if (ujob.jobXP >= 50) {
             ujob.jobLevel += 1;
-            ujob.jobXP -= 100;
+            ujob.jobXP -= 50;
         }
-        if (ujob.jobLevel >= 100) {
+        if (ujob.jobLevel >= 50) {
             ujob.jobPosition = "headofdepartment";
             ujob.jobXP = 0;
             ujob.jobLevel = 1;
         }
     } else if (ujob.jobPosition == "headofdepartment") {
-        if (ujob.jobXP >= 200) {
+        if (ujob.jobXP >= 100) {
             ujob.jobLevel += 1;
-            ujob.jobXP -= 200;
+            ujob.jobXP -= 100;
         }
-        if (ujob.jobLevel >= 500) {
+        if (ujob.jobLevel >= 200) {
             ujob.jobPosition = "manager";
             ujob.jobXP = 0;
             ujob.jobLevel = 1;
