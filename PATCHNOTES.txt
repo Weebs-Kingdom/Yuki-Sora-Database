@@ -1,7 +1,7 @@
-Yuki-Sora-Database patched to version 1.0.5
+Yuki-Sora-Database patched to version 1.0.6
 
 New features
-• Job leveling
+• Alexa integration
 •
 •
 
