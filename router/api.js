@@ -79,36 +79,6 @@ router.post("/userAlexaVerify", verify, async (req, res) => {
     });
 });
 
-router.post("/dispatchYukiCommand", verify, async (req, res) => {
-    //{name: user.name, level: user.level, xp: user.xp, weboos: "100", jlevel: "100", jxp: "50", energy: "50", job: "Worker", jobpos: "Trainee"}
-    const user = await getUser(req.body);
-    if (!user) return res.status(200).json({status: 400, message: "User not found!"});
-    var ujob;
-    var job;
-
-    ujob = await UserJob.findOne({_id: user.job})
-    if(ujob == null){
-        job = {doing: "No job"};
-        ujob = {jobLevel: "undefined", jobXP: "undefined", jobPosition: "undefined", jobSreak: "undefined"};
-    } else {
-        job = await Job.findOne({_id: ujob.job});
-    }
-
-
-    const options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'api-token': process.env.INTERN_API_TOKEN
-        },
-        body: JSON.stringify(data)
-    };
-
-    fetch('http://127.0.0.1:5001/api/yukidb/getLevelInfo', options).then(res => res.json()).then(json => {
-        res.status(200).json(json);
-    });
-});
-
 router.post("/getLevelInfo", verify, async (req, res) => {
     //{name: user.name, level: user.level, xp: user.xp, weboos: "100", jlevel: "100", jxp: "50", energy: "50", job: "Worker", jobpos: "Trainee"}
     const user = await getUser(req.body);
