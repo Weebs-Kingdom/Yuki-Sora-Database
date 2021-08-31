@@ -1891,11 +1891,11 @@ function testJob(ujob) {
             ujob.jobLevel = 1;
         }
     } else if (ujob.jobPosition == "headofdepartment") {
-        if (ujob.jobXP >= 100) {
+        if (ujob.jobXP >= 75) {
             ujob.jobLevel += 1;
-            ujob.jobXP -= 100;
+            ujob.jobXP -= 75;
         }
-        if (ujob.jobLevel >= 200) {
+        if (ujob.jobLevel >= 100) {
             ujob.jobPosition = "manager";
             ujob.jobXP = 0;
             ujob.jobLevel = 1;
