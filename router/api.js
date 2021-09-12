@@ -18,6 +18,7 @@ const Topic = require("../models/Topics/Topic");
 const TCategory = require("../models/Topics/TCategory");
 const RedeemCode = require("../models/Redeem/RedeemCode");
 const RedeemUserCon = require("../models/Redeem/RedeemUserCon");
+const TwitchUserCon = require("../models/User/UserTwitchConnection");
 
 //middleware
 const verify = require("../middleware/verifyApiToken");
@@ -64,8 +65,48 @@ router.post("/apiToken", async (req, res) => {
     }
 });
 
+router.post("/getTwitchUserConByUser", verify, async (req, res) => {
+    var tw;
+
+    if (req._id)
+        tw = await TwitchUserCon.findOne({user: req._id});
+    else if (req.id)
+        tw = await TwitchUserCon.findOne({user: await User.findOne({userID: req.id})._id});
+
+    res.status(200).json({status: 200, data: tw});
+});
+
+router.post("/addTwitchUser", verify, async (req, res) => {
+    const user = await getUser(req);
+    if(user) return res.status(200).json({status: 400, message: "User not found!"});
+
+    const f = await TwitchUserCon.findOne({user: user._id});
+    const ff = await TwitchUserCon.findOne({twitchChannelId: req.twitch});
+
+    if(f || ff)
+        return res.status(200).json({status: 400, message: "The channel or the user is already registered"});
+
+    const tw = new TwitchUserCon({
+        user: user._id,
+        twitchChannelId: req.twitch
+    });
+
+    await tw.save();
+    res.status(200).json({status: 200, data: tw});
+});
+
+router.post("/removeTwitchUser", verify, async (req, res) => {
+    const user = await getUser(req);
+    if(user) return res.status(200).json({status: 400, message: "User not found!"});
+
+    const f = await TwitchUserCon.findOne({user: user._id});
+
+    await f.remove();
+    res.status(200).json({status: 200, message: "removed!"});
+});
+
 router.post("/userAlexaVerify", verify, async (req, res) => {
-       const options = {
+    const options = {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -87,7 +128,7 @@ router.post("/getLevelInfo", verify, async (req, res) => {
     var job;
 
     ujob = await UserJob.findOne({_id: user.job})
-    if(ujob == null){
+    if (ujob == null) {
         job = {doing: "No job"};
         ujob = {jobLevel: "undefined", jobXP: "undefined", jobPosition: "undefined", jobSreak: "undefined"};
     } else {
@@ -95,8 +136,19 @@ router.post("/getLevelInfo", verify, async (req, res) => {
     }
 
 
-
-    const data ={img: req.body.img, jlevel: ujob.jobLevel, jxp: ujob.jobXP, job: job.doing, jobpos: ujob.jobPosition, jobstreak: ujob.jobStreak, name: user.username, level: user.level, xp: user.xp, weboos: user.coins, energy: user.energy};
+    const data = {
+        img: req.body.img,
+        jlevel: ujob.jobLevel,
+        jxp: ujob.jobXP,
+        job: job.doing,
+        jobpos: ujob.jobPosition,
+        jobstreak: ujob.jobStreak,
+        name: user.username,
+        level: user.level,
+        xp: user.xp,
+        weboos: user.coins,
+        energy: user.energy
+    };
 
     const options = {
         method: 'POST',
@@ -774,7 +826,7 @@ router.post("/craft", verify, async (req, res) => {
     }
 
     var amount = recipe.resultAmount;
-    if(amount == undefined || amount == null)
+    if (amount == undefined || amount == null)
         amount = 1;
     await giveUserItem(amount, recipe.result._id, user);
     res.status(200).json({status: 200, message: "Crafted!"});
@@ -816,7 +868,7 @@ router.post("/work", verify, async (req, res) => {
 
     const fourHours = 1000 * 60 * 60 * 4;
     const fourHoursAgo = Date.now() - fourHours;
-    const yesterday = new Date(new Date().setDate(new Date().getDate()-1));
+    const yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
 
     if (user.lastWorkTime > fourHoursAgo) {
         var seconds = Math.floor((user.lastWorkTime - (fourHoursAgo)) / 1000);

@@ -1,7 +1,7 @@
-Yuki-Sora-Database patched to version 1.0.6
+Yuki-Sora-Database patched to version 1.0.6_001
 
 New features
-• Alexa integration
+• Twitch integration
 •
 •
 
