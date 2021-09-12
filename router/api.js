@@ -65,6 +65,12 @@ router.post("/apiToken", async (req, res) => {
     }
 });
 
+router.get("/getTwitchUserCons", verify, async (req, res) => {
+    const tw = await TwitchUserCon.find({});
+
+    res.status(200).json({status: 200, data: tw});
+});
+
 router.post("/getTwitchUserConByUser", verify, async (req, res) => {
     var tw;
 
@@ -78,12 +84,12 @@ router.post("/getTwitchUserConByUser", verify, async (req, res) => {
 
 router.post("/addTwitchUser", verify, async (req, res) => {
     const user = await getUser(req);
-    if(user) return res.status(200).json({status: 400, message: "User not found!"});
+    if (user) return res.status(200).json({status: 400, message: "User not found!"});
 
     const f = await TwitchUserCon.findOne({user: user._id});
     const ff = await TwitchUserCon.findOne({twitchChannelId: req.twitch});
 
-    if(f || ff)
+    if (f || ff)
         return res.status(200).json({status: 400, message: "The channel or the user is already registered"});
 
     const tw = new TwitchUserCon({
@@ -97,7 +103,7 @@ router.post("/addTwitchUser", verify, async (req, res) => {
 
 router.post("/removeTwitchUser", verify, async (req, res) => {
     const user = await getUser(req);
-    if(user) return res.status(200).json({status: 400, message: "User not found!"});
+    if (user) return res.status(200).json({status: 400, message: "User not found!"});
 
     const f = await TwitchUserCon.findOne({user: user._id});
 
