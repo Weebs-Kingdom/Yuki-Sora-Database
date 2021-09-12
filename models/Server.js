@@ -21,7 +21,8 @@ const userSchema = new mongoose.Schema({
     dungeonEmoji: String,
     dungeonChan: [String],
     dungeonChanRoles: [String],
-    gamingChannels: [String]
+    gamingChannels: [String],
+    twitchChannel: String
 });
 
 module.exports = mongoose.model("Server", userSchema);
