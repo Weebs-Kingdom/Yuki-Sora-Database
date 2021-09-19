@@ -70,9 +70,10 @@ router.get("/getTwitchUserCons", verify, async (req, res) => {
 
     var ar = [];
 
-    for (let twKey in tww) {
+    for (const twKey of tw) {
         var tww = twKey.toJSON();
-        tww.user = await User.findOne({_id: twKey.user}).userID;
+        const usr = await User.findOne({_id: twKey.user});
+        tww.user = usr.userID;
         ar.push(tww);
     }
 
@@ -84,7 +85,7 @@ router.post("/getTwitchUserConByUser", verify, async (req, res) => {
     if (!user) return res.status(200).json({status: 400, message: "User not found!"});
     const tw = await TwitchUserCon.findOne({user: user._id});
     if(!tw)return res.status(200).json({status: 400, message: "Con not found!"});
-    const tww = tw.toJSON();
+    var tww = tw.toJSON();
 
     tww.user = user.userID;
 
