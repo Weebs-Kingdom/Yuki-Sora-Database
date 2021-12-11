@@ -714,6 +714,28 @@ router.post("/getUser", verify, async (req, res) => {
     res.status(200).json({status: 200, data: user});
 });
 
+router.post("/getAllUsers", verify, async (req, res) => {
+    const s = req.body.id;
+    const si = req.body._id;
+    const name = req.body.name;
+
+    var user;
+
+    if(name) user = await User.find({username: name});
+    if (s) user = await User.find({userID: s});
+    if (si) {
+        var suser = await User.findById(si);
+        user = [];
+        user.push(suser);
+    }
+
+
+    if (!user)
+        return res.status(200).json({status: 400, message: "User not found!"});
+    //maybe to this in more specific json text yk...
+    res.status(200).json({status: 200, data: user});
+});
+
 router.get("/getUser", verify, async (req, res) => {
     const user = await User.find();
 
