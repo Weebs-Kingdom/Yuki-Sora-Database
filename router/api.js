@@ -919,6 +919,16 @@ router.post("/work", verify, async (req, res) => {
         minutes = minutes - (days * 24 * 60) - (hours * 60);
         seconds = seconds - (days * 24 * 60 * 60) - (hours * 60 * 60) - (minutes * 60);
 
+        if(hours < 9){
+            hours = '0' + hours;
+        }
+        if(minutes < 9){
+            minutes = '0' + minutes;
+        }
+        if(seconds < 9){
+            seconds = '0' + hours;
+        }
+
         const ts = hours + ":" + minutes + ":" + seconds;
         return res
             .status(200)
@@ -964,12 +974,18 @@ router.post("/work", verify, async (req, res) => {
     } else if (userJob.jobStreak < 50) {
         cAdd += 40;
     } else if (userJob.jobStreak < 100) {
-        cAdd += 70
+        cAdd += 70;
     } else if (userJob.jobStreak < 365) {
         cAdd += 100;
     } else if (userJob.jobStreak < 500) {
         cAdd += 200;
+    } else {
+        cAdd += 500;
     }
+
+    cAdd += (userJob.level / 10) * 5;
+
+    cAdd = Math.round(cAdd);
 
     try {
         userJob = testJob(userJob);
@@ -1986,13 +2002,13 @@ function testJob(ujob) {
             ujob.jobLevel += 1;
             ujob.jobXP -= 75;
         }
-        if (ujob.jobLevel >= 100) {
+        if (ujob.jobLevel >= 75) {
             ujob.jobPosition = "manager";
             ujob.jobXP = 0;
             ujob.jobLevel = 1;
         }
     } else if (ujob.jobPosition == "manager") {
-        if (ujob.jobXP >= 500) {
+        if (ujob.jobXP >= 200) {
             ujob.jobLevel += 1;
             ujob.jobXP -= 500;
         }
@@ -2096,7 +2112,7 @@ async function cleanUp() {
         }
 
         if (!a1 || !a2 || !a3 || !a4) {
-            await UserMonster.updateOne({_id: e._id}, {$set: update})
+            await UserMonster.updateOne({_id: e._id}, {$set: F})
             txt += "\n";
         }
     }
