@@ -1,7 +1,7 @@
-Yuki-Sora-Database patched to version 1.0.6_001
+Yuki-Sora-Database patched to version 1.0.6_002
 
 New features
-• Twitch integration
+• Earn more money uwu
 •
 •
 
