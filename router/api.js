@@ -983,7 +983,7 @@ router.post("/work", verify, async (req, res) => {
         cAdd += 500;
     }
 
-    cAdd += Math.round((userJob.level / 10) * 5);
+    cAdd += Math.round((userJob.jobLevel / 10) * 5);
 
     try {
         userJob = testJob(userJob);
