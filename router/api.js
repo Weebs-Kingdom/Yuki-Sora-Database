@@ -2008,7 +2008,7 @@ function testJob(ujob) {
     } else if (ujob.jobPosition == "manager") {
         if (ujob.jobXP >= 200) {
             ujob.jobLevel += 1;
-            ujob.jobXP -= 500;
+            ujob.jobXP -= 200;
         }
     }
     return ujob;
