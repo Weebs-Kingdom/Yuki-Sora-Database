@@ -713,6 +713,8 @@ router.post("/getUser", verify, async (req, res) => {
     if (!user)
         return res.status(200).json({status: 400, message: "User not found!"});
     //maybe to this in more specific json text yk...
+
+    user.job = await UserJob.findById(user.job);
     res.status(200).json({status: 200, data: user});
 });
 
@@ -1456,6 +1458,11 @@ router.patch("/user", verify, async (req, res) => {
         return res.status(200).json({status: 400, message: "user does not exist"});
 
     try {
+        const job = req.body.data.job;
+        if(job)
+            delete req.body.data.job;
+
+        const savedJob = await UserJob.findOneAndUpdate({_id: user.job}, job);
         const savedUser = await User.findOneAndUpdate({_id: user._id}, req.body.data);
         res.status(200).json({status: 200, _id: savedUser._id, message: "patched user"});
     } catch (err) {
