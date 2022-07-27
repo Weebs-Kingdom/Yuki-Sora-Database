@@ -717,6 +717,8 @@ router.post("/getUser", verify, async (req, res) => {
     const data = user;
 
     data.job = await UserJob.findOne({_id: user.job});
+    if(!data.job)
+        delete data.job;
     res.status(200).json({status: 200, data: data});
 });
 
