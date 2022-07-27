@@ -120,7 +120,7 @@ router.post("/removeTwitchUser", verify, async (req, res) => {
 
     if(!f) return res.status(200).json({status: 200, message: "User already removed"});
 
-    await f.remove();
+    await f.deleteOne();
     res.status(200).json({status: 200, message: "removed!"});
 });
 
@@ -209,7 +209,7 @@ router.post("/redeemcode", verify, async (req, res) => {
         if (now.after(redeemCode.expires)) {
             canUse = false;
             if (redeemCode.doExpire)
-                await redeemCode.remove();
+                await redeemCode.deleteOne();
         }
     }
 
@@ -462,7 +462,7 @@ router.post("/createFight", verify, async (req, res) => {
 
     const t = await AiMonster.findOne({user: user._id});
     if (t)
-        await t.remove();
+        await t.deleteOne();
 
     var mnsters = await Monster.find();
     shuffle(mnsters);
@@ -714,11 +714,16 @@ router.post("/getUser", verify, async (req, res) => {
         return res.status(200).json({status: 400, message: "User not found!"});
     //maybe to this in more specific json text yk...
 
-    const data = user;
+    const job = await UserJob.findOne({_id: user.job});
 
-    data.job = await UserJob.findOne({_id: user.job});
+    const data = user.toJSON();
+    data.job = job;
+
     if(!data.job)
         delete data.job;
+
+    console.log(data);
+
     res.status(200).json({status: 200, data: data});
 });
 
@@ -1083,7 +1088,7 @@ router.delete("/userJob", verify, async (req, res) => {
 
     try {
         const userJob = UserJob.findById(user.job);
-        await userJob.remove();
+        await userJob.deleteOne();
     } catch (err) {
         console.log("an error occured! " + err);
     }
@@ -1103,7 +1108,7 @@ router.delete("/userJob", verify, async (req, res) => {
 
 router.delete("/userMonster", verify, async (req, res) => {
     const id = req.body.mid;
-    await UserMonster.remove({_id: id});
+    await UserMonster.deleteOne({_id: id});
     res.status(200).json({status: 200, message: "deleted!"});
 });
 
@@ -1287,7 +1292,7 @@ router.patch("/topiccategory", verify, async (req, res) => {
 
 router.delete("/topiccategory", verify, async (req, res) => {
     try {
-        const savedTopic = await TCategory.remove({_id: req.body._id});
+        const savedTopic = await TCategory.deleteOne({_id: req.body._id});
         res.status(200).json({status: 200, message: "removed"});
     } catch (err) {
         console.log("an error occured! " + err);
@@ -1358,7 +1363,7 @@ router.patch("/topic", verify, async (req, res) => {
 
 router.delete("/topic", verify, async (req, res) => {
     try {
-        const savedTopic = await Topic.remove({_id: req.body._id});
+        const savedTopic = await Topic.deleteOne({_id: req.body._id});
         res.status(200).json({status: 200, message: "removed"});
     } catch (err) {
         console.log("an error occured! " + err);
@@ -1432,7 +1437,7 @@ router.patch("/recipe", verify, async (req, res) => {
 
 router.delete("/recipe", verify, async (req, res) => {
     try {
-        const savedRecipe = await Recipe.remove({_id: req.body._id});
+        const savedRecipe = await Recipe.deleteOne({_id: req.body._id});
         res.status(200).json({status: 200, message: "removed"});
     } catch (err) {
         console.log("an error occured! " + err);
@@ -1481,7 +1486,7 @@ router.patch("/user", verify, async (req, res) => {
 
 router.delete("/user", verify, async (req, res) => {
     try {
-        const savedUser = await User.remove({_id: req.body._id});
+        const savedUser = await User.deleteOne({_id: req.body._id});
         res.status(200).json({status: 200, message: "removed"});
     } catch (err) {
         console.log("an error occured! " + err);
@@ -1534,7 +1539,7 @@ router.patch("/server", verify, async (req, res) => {
 
 router.delete("/server", verify, async (req, res) => {
     try {
-        const savedServer = await DiscServer.remove({_id: req.body._id});
+        const savedServer = await DiscServer.deleteOne({_id: req.body._id});
         res.status(200).json({status: 200, message: "removed"});
     } catch (err) {
         console.log("an error occured! " + err);
@@ -1589,7 +1594,7 @@ router.patch("/job", verify, async (req, res) => {
 
 router.delete("/job", verify, async (req, res) => {
     try {
-        const savedJob = await Job.remove({_id: req.body._id});
+        const savedJob = await Job.deleteOne({_id: req.body._id});
         res.status(200).json({status: 200, message: "removed"});
     } catch (err) {
         console.log("an error occured! " + err);
@@ -1644,7 +1649,7 @@ router.patch("/redeem", verify, async (req, res) => {
 
 router.delete("/redeem", verify, async (req, res) => {
     try {
-        const savedCode = await RedeemCode.remove({_id: req.body._id});
+        const savedCode = await RedeemCode.deleteOne({_id: req.body._id});
         res.status(200).json({status: 200, message: "removed"});
     } catch (err) {
         console.log("an error occured! " + err);
@@ -1744,7 +1749,7 @@ router.patch("/monster", verify, async (req, res) => {
             }
             if (found === false) {
                 var a = await AMcon.findOne({attack: e._id, monster: req.body._id});
-                await a.remove();
+                await a.deleteOne();
             }
         }
 
@@ -1765,7 +1770,7 @@ router.patch("/monster", verify, async (req, res) => {
 
 router.delete("/monster", verify, async (req, res) => {
     try {
-        await Monster.remove({_id: req.body._id});
+        await Monster.deleteOne({_id: req.body._id});
         res.status(200).json({status: 200, message: "removed"});
     } catch (err) {
         console.log("an error occured! " + err);
@@ -1823,7 +1828,7 @@ router.patch("/item", verify, async (req, res) => {
 
 router.delete("/item", verify, async (req, res) => {
     try {
-        await Item.remove({_id: req.body._id});
+        await Item.deleteOne({_id: req.body._id});
         res.status(200).json({status: 200, message: "removed"});
     } catch (err) {
         console.log("an error occured! " + err);
@@ -1878,7 +1883,7 @@ router.patch("/attack", verify, async (req, res) => {
 
 router.delete("/attack", verify, async (req, res) => {
     try {
-        await Attack.remove({_id: req.body._id});
+        await Attack.deleteOne({_id: req.body._id});
         res.status(200).json({status: 200, message: "removed"});
     } catch (err) {
         console.log("an error occured! " + err);
@@ -1915,7 +1920,7 @@ async function giveUserItem(amount, item, user) {
                 .json({status: 400, message: "Can't have negative amount of items"});
 
         if (st.amount == 0) {
-            await st.remove();
+            await st.deleteOne();
         }
 
         try {
@@ -2037,13 +2042,13 @@ async function cleanUp() {
         if (e.doExpire)
             if (date > e.expires)
                 if (e.autoDelete) {
-                    e.remove();
+                    e.deleteOne();
                     txt += "[-] Redeemcode " + e.code + "\n";
                 }
         if (e.hasMaxUsage)
             if (e.used >= e.maxUsage)
                 if (e.autoDelete) {
-                    e.remove();
+                    e.deleteOne();
                     txt += "[-] Redeemcode " + e.code + "\n";
                 }
     }
@@ -2055,7 +2060,7 @@ async function cleanUp() {
         const code = await RedeemCode.findById(e.redeemCode);
 
         if (!u || !code) {
-            await e.remove();
+            await e.deleteOne();
             txt += "[-] Redeemcodecon " + e._id + "\n";
         }
     }
@@ -2068,7 +2073,7 @@ async function cleanUp() {
 
         if (!usr || !i1) {
             txt += "[-] Storage " + e._id + "\n";
-            await e.remove();
+            await e.deleteOne();
         }
     }
 
@@ -2080,7 +2085,7 @@ async function cleanUp() {
         const m = await Monster.findById(e.rootMonster);
         const usr = await User.findById(e.user);
         if (!m || !usr) {
-            await e.remove();
+            await e.deleteOne();
             txt += "[-] Monster " + e.name + "\n";
             continue;
         }
@@ -2155,7 +2160,7 @@ async function cleanUp() {
 
         if (!mnster || !att) {
             txt += "[-] AM Con" + "\n";
-            await e.remove();
+            await e.deleteOne();
         }
     }
 
