@@ -716,7 +716,7 @@ router.post("/getUser", verify, async (req, res) => {
 
     const data = user;
 
-    data.job = await UserJob.findById(user.job);
+    data.job = await UserJob.findOne({_id: user.job});
     res.status(200).json({status: 200, data: data});
 });
 
