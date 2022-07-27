@@ -7,7 +7,7 @@ const Item = require("../models/Items/Item");
 const ItemUserCon = require("../models/Items/ItemUserCon");
 const Attack = require("../models/Monster/Attack");
 const UserMonster = require("../models/Monster/UserMonster");
-const DiscServer = require("../models/Server");
+const DiscServer = require("../models/Server/Server");
 const Monster = require("../models/Monster/Monster");
 const Job = require("../models/User/Job");
 const ApiToken = require("../models/ApiToken");
@@ -117,6 +117,8 @@ router.post("/removeTwitchUser", verify, async (req, res) => {
     if (!user) return res.status(200).json({status: 400, message: "User not found!"});
 
     const f = await TwitchUserCon.findOne({user: user._id});
+
+    if(!f) return res.status(200).json({status: 200, message: "User already removed"});
 
     await f.remove();
     res.status(200).json({status: 200, message: "removed!"});
@@ -2290,7 +2292,7 @@ function startSchedules() {
     });
 
     const userEnergy = schedule.scheduleJob({hour: 1}, async function (fireDate) {
-        const users = User.find({});
+        const users = await User.find({});
         for (let e of users) {
             if (e.maxEnergy > e.energy) {
                 e.energy++;

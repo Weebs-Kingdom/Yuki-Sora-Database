@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
     username: { type: String, require: true },
+    servers: [String],
     userID: { type: String, require: true },
-    ytplaylist: { type: String, require: true },
     isBotAdmin: { type: Boolean, default: false },
     lang: { type: String, default: "en" },
     lastWorkTime: { type: Date },
