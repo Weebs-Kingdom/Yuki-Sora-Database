@@ -34,6 +34,42 @@ router.use(yukir({route: "disc-user", module: User}));
 router.use(yukir({route: "autochannel", module: AutoChannel}));
 router.use(yukir({route: "user-twitch-con", module: TwitchUserCon}));
 
+
+router.post("/findAutoChannelByIds", verify, async (req, res) => {
+    const id = req.body.guildId;
+    const channelId = req.body.channelId;
+    let server;
+    if(id){
+        server = DiscServer.findOne({serverId: id});
+    }
+    let data;
+    if (server || channelId) {
+        data = await AutoChannel.findOne({server: server._id, channelId: channelId});
+    }
+
+    if (!data)
+        return res.status(200).json({status: 404, message: "The data can't be found!", data: []});
+    else
+        return res.status(200).json({status: 200, message: "Found data!", data: data});
+});
+
+router.post("/findAutoChannelsByGuildId", verify, async (req, res) => {
+    const id = req.body.guildId;
+    let server;
+    if(id){
+        server = await DiscServer.findOne({serverId: id});
+    }
+    let data;
+    if (server) {
+        data = await AutoChannel.find({server: server._id});
+    }
+
+    if (!data)
+        return res.status(200).json({status: 404, message: "The data can't be found!", data: []});
+    else
+        return res.status(200).json({status: 200, message: "Found data!", data: data});
+});
+
 router.post("/findServerById", verify, async (req, res) => {
     const id = req.body.id;
     let data;
