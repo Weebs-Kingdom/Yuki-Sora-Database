@@ -3,14 +3,14 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
     serverName: String,
     serverId: String,
+    patchNotesChannelId: String,
     certificationMessageId: String,
     certificationChannelId: String,
     welcomeMessageChannelId: String,
     statisticsCategoryId: String,
     defaultRoles: [String],
     defaultMemberRoleId: String,
-    defaultTempGamerRoleId: String,
-    autoChannelIds: [String],
+    defaultTempMemberRoleId: String,
     primeRoleId: String,
     vipRoleId: String,
     boosterRoleId: String,
@@ -19,7 +19,6 @@ const userSchema = new mongoose.Schema({
     dungeonEmoji: String,
     dungeonChan: [String],
     dungeonChanRoles: [String],
-    gamingChannels: [String],
     twitchNotifyChannelId: String
 });
 
