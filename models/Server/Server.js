@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
     serverName: String,
     serverId: String,
+    guildName: String,
+    guildId: String,
     patchNotesChannelId: String,
     certificationMessageId: String,
     certificationChannelId: String,

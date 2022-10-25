@@ -64,7 +64,7 @@ class Route {
     }
 }
 
-module.exports = function (routeinfo){
+module.exports = function (routeinfo) {
     new Route(routeinfo.route, routeinfo.module)
     return router;
 }

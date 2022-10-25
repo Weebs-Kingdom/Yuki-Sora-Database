@@ -84,7 +84,7 @@ router.post("/getTwitchUserConByUser", verify, async (req, res) => {
     const user = await getUser(req.body);
     if (!user) return res.status(200).json({status: 400, message: "User not found!"});
     const tw = await TwitchUserCon.findOne({user: user._id});
-    if(!tw)return res.status(200).json({status: 400, message: "Con not found!"});
+    if (!tw) return res.status(200).json({status: 400, message: "Con not found!"});
     var tww = tw.toJSON();
 
     tww.user = user.userID;
@@ -118,7 +118,7 @@ router.post("/removeTwitchUser", verify, async (req, res) => {
 
     const f = await TwitchUserCon.findOne({user: user._id});
 
-    if(!f) return res.status(200).json({status: 200, message: "User already removed"});
+    if (!f) return res.status(200).json({status: 200, message: "User already removed"});
 
     await f.deleteOne();
     res.status(200).json({status: 200, message: "removed!"});
@@ -719,7 +719,7 @@ router.post("/getUser", verify, async (req, res) => {
     const data = user.toJSON();
     data.job = job;
 
-    if(!data.job)
+    if (!data.job)
         delete data.job;
 
     console.log(data);
@@ -734,7 +734,7 @@ router.post("/getAllUsers", verify, async (req, res) => {
 
     var user;
 
-    if(name) user = await User.find({username: name});
+    if (name) user = await User.find({username: name});
     if (s) user = await User.find({userID: s});
     if (si) {
         var suser = await User.findById(si);
@@ -932,13 +932,13 @@ router.post("/work", verify, async (req, res) => {
         minutes = minutes - (days * 24 * 60) - (hours * 60);
         seconds = seconds - (days * 24 * 60 * 60) - (hours * 60 * 60) - (minutes * 60);
 
-        if(hours < 9){
+        if (hours < 9) {
             hours = '0' + hours;
         }
-        if(minutes < 9){
+        if (minutes < 9) {
             minutes = '0' + minutes;
         }
-        if(seconds < 9){
+        if (seconds < 9) {
             seconds = '0' + hours;
         }
 
@@ -1468,7 +1468,7 @@ router.patch("/user", verify, async (req, res) => {
 
     try {
         const job = req.body.data.job;
-        if(job)
+        if (job)
             delete req.body.data.job;
 
         const savedJob = await UserJob.findOneAndUpdate({_id: user.job}, job);

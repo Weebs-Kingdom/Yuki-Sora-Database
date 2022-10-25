@@ -37,10 +37,14 @@ router.use(yukir({route: "autochannel", module: AutoChannel}));
 router.use(yukir({route: "user-twitch-con", module: TwitchUserCon}));
 router.use(yukir({route: "vote", module: Vote}));
 router.use(yukir({route: "vote-element", module: VoteElement}));
+router.use(yukir({route: "job", module: Job}));
+router.use(yukir({route: "user-job", module: UserJob}));
+
+
 
 router.post("/findVoteElementsByVote", verify, async (req, res) => {
     const id = req.body.vote;
-    if(!id){
+    if (!id) {
         return res.status(200).json({status: 404, message: "The data can't be found! The id is empty", data: []});
     }
     const data = await VoteElement.find({vote: id});
@@ -51,19 +55,40 @@ router.post("/findVoteElementsByVote", verify, async (req, res) => {
         return res.status(200).json({status: 200, message: "Found data!", data: data});
 });
 
-router.post("/findVoteByChannel", verify, async (req, res) => {
+router.post("/findVotesByChannel", verify, async (req, res) => {
     const id = req.body.serverId;
     const channelId = req.body.channelId;
     let server;
 
-    if(id){
+    if (id) {
         server = await DiscServer.findOne({_id: id});
     }
     let data;
-    if(!id || !channelId){
+    if (!id || !channelId) {
         return res.status(200).json({status: 404, message: "The data can't be found! The id is empty", data: []});
     }
     data = await Vote.find({server: server._id, channelId: channelId});
+
+    if (!data)
+        return res.status(200).json({status: 404, message: "The data can't be found!", data: []});
+    else
+        return res.status(200).json({status: 200, message: "Found data!", data: data});
+});
+
+router.post("/findVoteByMessage", verify, async (req, res) => {
+    const id = req.body.serverId;
+    const channelId = req.body.channelId;
+    const messageId = req.body.messageId;
+    let server;
+
+    if (id) {
+        server = await DiscServer.findOne({_id: id});
+    }
+    let data;
+    if (!id || !channelId || !messageId) {
+        return res.status(200).json({status: 404, message: "The data can't be found! The id is empty", data: []});
+    }
+    data = await Vote.findOne({server: server._id, channelId: channelId, messageId: messageId});
 
     if (!data)
         return res.status(200).json({status: 404, message: "The data can't be found!", data: []});
@@ -75,7 +100,7 @@ router.post("/findAutoChannelByIds", verify, async (req, res) => {
     const id = req.body.serverId;
     const channelId = req.body.channelId;
     let server;
-    if(id){
+    if (id) {
         server = await DiscServer.findOne({serverId: id});
     }
     let data;
@@ -92,7 +117,7 @@ router.post("/findAutoChannelByIds", verify, async (req, res) => {
 router.post("/findAutoChannelsByGuildId", verify, async (req, res) => {
     const id = req.body.serverId;
     let server;
-    if(id){
+    if (id) {
         server = await DiscServer.findOne({serverId: id});
     }
     let data;
@@ -136,7 +161,7 @@ router.post("/findTwitchUserConByUser", verify, async (req, res) => {
     const user = await getUser(req.body);
     if (!user) return res.status(200).json({status: 400, message: "User not found!", data: []});
     const tw = await TwitchUserCon.findOne({user: user._id});
-    if(!tw)return res.status(200).json({status: 400, message: "Con not found!", data: []});
+    if (!tw) return res.status(200).json({status: 400, message: "Con not found!", data: []});
     var tww = tw.toJSON();
 
     tww.user = user.userID;

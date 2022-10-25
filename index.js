@@ -43,7 +43,7 @@ app.use(methodOverride('X-HTTP-Method-Override')); // Google/GData
 dotenv.config();
 app.listen(5004, () => console.log('listening on port ' + 5004));
 app.use(express.static('public'));
-app.use(parser.urlencoded({ extended: false }));
+app.use(parser.urlencoded({extended: false}));
 app.use(parser.json());
 app.use(appRouter);
 
@@ -59,7 +59,7 @@ process.on('uncaughtException', (error) => {
     //process.exit(1);
 })
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     let date_ob = new Date();
     let date = ("0" + date_ob.getDate()).slice(-2);
@@ -74,7 +74,7 @@ app.use(function(req, res, next) {
     // respond with html page
     // respond with json
     if (req.accepts('json')) {
-        res.send({ status: 404, response: 'Not found' });
+        res.send({status: 404, response: 'Not found'});
         return;
     }
     // default to plain-text. send()

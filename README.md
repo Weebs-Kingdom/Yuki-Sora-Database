@@ -3,51 +3,62 @@
 Yuki-Sora is a Discordbot with a lot of features. Here you can see all the stuff you need to know about each module.
 
 # Other Yuki Reposetorys
+
 * [Yuki-Sora](https://github.com/Weebs-Kingdom/Yuki-Sora)
 * [Homepage](https://github.com/Weebs-Kingdom/weebskingdom.com)
 * [Music Slave](https://github.com/Weebs-Kingdom/Yuki-Sora-MusicSlave)
 * [Lazy Team](https://github.com/MindCollaps/Lazy-Team)
 
 # Yuki-Sora Wiki
+
 * [Monsters](https://github.com/NeoMC2/Yuki-Sora/wiki/Monsters)
 * [Items](https://github.com/NeoMC2/Yuki-Sora/wiki/Item)
 * [Dungeon](https://github.com/MindCollaps/Yuki-Sora/wiki/Dungeon)
 * [Commands](https://github.com/NeoMC2/Yuki-Sora/wiki/Commands)
 * [Gif list](https://github.com/NeoMC2/Yuki-Sora/wiki/Gifs)
 
-
 ***
 
-
-# Credits 
+# Credits
 
 ## Main Developer
+
 ### [Noah Till (MindCollaps)](https://github.com/mindcollaps)
 
 ## Developer support
+
 ### Hanna (scnrjse)
+
 Gif list, Language-Support, enhancements
 
 ### Dragon
+
 Gif list, Monsters, enhancements
 
 ### Nameless
+
 Illustration
 
-### Kaito 
+### Kaito
+
 Language-Support
 
-### Edward Wolf (Pastelicious) 
+### Edward Wolf (Pastelicious)
+
 Monsters
 
 ### Karoline Fließ (Grand Goddess)
+
 Monsters
 
 # API Requests
+
 ## /api/yuki/item
+
 > post, delete, patch, get
 
 Req. Body
+
 ```json
 {
     "itemName": "String",
@@ -60,6 +71,7 @@ Req. Body
 ```
 
 Res. Body:
+
 ```json
 {
     "status": 200,
@@ -69,9 +81,11 @@ Res. Body:
 ```
 
 ## /api/yuki/monster
+
 > post, delete, patch, get
 
 Req. Body
+
 ```json
 {
     "name": "String",
@@ -86,6 +100,7 @@ Req. Body
 ```
 
 Res. Body:
+
 ```json
 {
     "status": 200,
@@ -95,9 +110,11 @@ Res. Body:
 ```
 
 ## /api/yuki/attack
+
 > post, delete, patch, get
 
 Req. Body
+
 ```json
 {
     "baseDmg": "Number",
@@ -109,6 +126,7 @@ Req. Body
 ```
 
 Res. Body:
+
 ```json
 {
     "status": 200,
@@ -118,9 +136,11 @@ Res. Body:
 ```
 
 ## /api/yuki/job
+
 > post, delete, patch, get
 
 Req. Body
+
 ```json
 {
     "earningTrainee": "Number",
@@ -134,6 +154,7 @@ Req. Body
 ```
 
 Res. Body:
+
 ```json
 {
     "status": 200,
@@ -143,9 +164,11 @@ Res. Body:
 ```
 
 ## /api/yuki/server
+
 > post, delete, patch
 
 Req. Body
+
 ```json
 {
     "serverName": "String",
@@ -169,6 +192,7 @@ Req. Body
 ```
 
 Res. Body:
+
 ```json
 {
     "status": 200,
@@ -178,9 +202,11 @@ Res. Body:
 ```
 
 ## /api/yuki/user
+
 > post, delete, patch, get
 
 Req. Body
+
 ```json
 {
     "username": "String",
@@ -202,6 +228,7 @@ Req. Body
 ```
 
 Res. Body:
+
 ```json
 {
     "status": 200,
@@ -211,9 +238,11 @@ Res. Body:
 ```
 
 ## /api/yuki/userJob
+
 > post, delete, patch
 
 Req. Post Body
+
 ```json
 {
     "id": "discordUserId",
@@ -223,6 +252,7 @@ Req. Post Body
 ```
 
 Req. Delete Body
+
 ```json
 {
     "id": "discordUserId"
@@ -230,6 +260,7 @@ Req. Delete Body
 ```
 
 Res. Body:
+
 ```json
 {
     "status": 200,
@@ -239,9 +270,11 @@ Res. Body:
 ```
 
 ## /api/yuki/work
+
 > post
 
 Req. Post Body
+
 ```json
 {
     "id": "discordUserId"
@@ -249,6 +282,7 @@ Req. Post Body
 ```
 
 Res. Body:
+
 ```json
 {
     "status": 200,
@@ -258,9 +292,11 @@ Res. Body:
 ```
 
 ## /api/yuki/userItem
+
 > post
 
 Req. Post Body
+
 ```json
 {
     "item": "item id",
@@ -270,6 +306,7 @@ Req. Post Body
 ```
 
 Res. Body:
+
 ```json
 {
     "status": 200,
@@ -279,9 +316,11 @@ Res. Body:
 ```
 
 ## /api/yuki/getUserMonsters
+
 > post
 
 Req. Post Body
+
 ```json
 {
     "id": "discordUserId"
@@ -289,6 +328,7 @@ Req. Post Body
 ```
 
 Res. Body:
+
 ```json
 {
     "status": 200,
@@ -297,9 +337,11 @@ Res. Body:
 ```
 
 ## /api/yuki/getUserInventory
+
 > post
 
 Req. Post Body
+
 ```json
 {
     "id": "discordUserId"
@@ -307,6 +349,7 @@ Req. Post Body
 ```
 
 Res. Body:
+
 ```json
 {
     "status": 200,
@@ -315,9 +358,11 @@ Res. Body:
 ```
 
 ## /api/yuki/getUser
+
 > post
 
 Req. Post Body
+
 ```json
 {
     "id": "discordUserId"
@@ -325,6 +370,7 @@ Req. Post Body
 ```
 
 Res. Body:
+
 ```json
 {
     "status": 200,
@@ -333,9 +379,11 @@ Res. Body:
 ```
 
 ## /api/yuki/fight
+
 > post
 
 Req. Post Body
+
 ```json
 {
     "id": "discordUserId",
@@ -345,6 +393,7 @@ Req. Post Body
 ```
 
 Res. Body:
+
 ```json
 {
     "status": 200,
@@ -352,11 +401,12 @@ Res. Body:
 }
 ```
 
-
 ## /api/yuki/coins
+
 > post
 
 Req. Post Body
+
 ```json
 {
     "id": "discordUserId",
@@ -365,6 +415,7 @@ Req. Post Body
 ```
 
 Res. Body:
+
 ```json
 {
     "status": 200,
