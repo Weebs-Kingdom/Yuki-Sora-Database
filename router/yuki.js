@@ -101,7 +101,7 @@ router.post("/findAutoChannelByIds", verify, async (req, res) => {
     const channelId = req.body.channelId;
     let server;
     if (id) {
-        server = await DiscServer.findOne({serverId: id});
+        server = await DiscServer.findOne({guildId: id});
     }
     let data;
     if (server || channelId) {
@@ -118,7 +118,7 @@ router.post("/findAutoChannelsByGuildId", verify, async (req, res) => {
     const id = req.body.serverId;
     let server;
     if (id) {
-        server = await DiscServer.findOne({serverId: id});
+        server = await DiscServer.findOne({guildId: id});
     }
     let data;
     if (server) {
@@ -135,7 +135,7 @@ router.post("/findServerById", verify, async (req, res) => {
     const id = req.body.id;
     let data;
     if (id) {
-        data = await DiscServer.findOne({serverId: id});
+        data = await DiscServer.findOne({guildId: id});
     }
 
     if (!data)
