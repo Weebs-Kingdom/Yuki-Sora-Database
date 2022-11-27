@@ -25,6 +25,7 @@ const TwitchUserCon = require("../models/User/UserTwitchConnection");
 const UserJob = require("../models/User/UserJob");
 const Vote = require("../models/Server/Vote/Vote");
 const VoteElement = require("../models/Server/Vote/VoteElement");
+const Task = require("../models/YukiTasks/Task");
 
 //middleware
 const verify = require("../middleware/verifyApiToken");
@@ -39,6 +40,7 @@ router.use(yukir({route: "vote", module: Vote}));
 router.use(yukir({route: "vote-element", module: VoteElement}));
 router.use(yukir({route: "job", module: Job}));
 router.use(yukir({route: "user-job", module: UserJob}));
+router.use(yukir({route: "yukiTask", module: Task}));
 
 
 

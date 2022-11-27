@@ -1,7 +1,7 @@
-Yuki-Sora-Database patched to version 1.0.6_002
+Yuki-Sora-Database patched to version 1.0.7
 
 New features
-• Earn more money uwu
+• Implemented new Task System
 •
 •
 

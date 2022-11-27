@@ -18,7 +18,7 @@ class Route {
                 data = await mod.find({});
             }
 
-            if (data)
+            if (!data)
                 return res.status(200).json({status: 404, message: "The data can't be found!", data: []});
             else
                 return res.status(200).json({status: 200, message: "Found data!", data: data});

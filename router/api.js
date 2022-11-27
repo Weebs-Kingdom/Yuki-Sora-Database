@@ -19,12 +19,23 @@ const TCategory = require("../models/Topics/TCategory");
 const RedeemCode = require("../models/Redeem/RedeemCode");
 const RedeemUserCon = require("../models/Redeem/RedeemUserCon");
 const TwitchUserCon = require("../models/User/UserTwitchConnection");
+const Task = require("../models/YukiTasks/Task");
 
 //middleware
 const verify = require("../middleware/verifyApiToken");
 const UserJob = require("../models/User/UserJob");
 
 const fetch = require('node-fetch');
+
+router.post("/task", verify, async (req, res) => {
+    let t = new Task({
+        task: req.body.task
+    });
+
+    await t.save();
+
+    res.status(200).json({status: 200, message: "Created task"})
+});
 
 //API Token creator
 router.post("/apiToken", async (req, res) => {
@@ -709,7 +720,6 @@ router.post("/xpOnMonster", verify, async (req, res) => {
 
 router.post("/getUser", verify, async (req, res) => {
     const user = await getUser(req.body);
-
     if (!user)
         return res.status(200).json({status: 400, message: "User not found!"});
     //maybe to this in more specific json text yk...
@@ -721,8 +731,6 @@ router.post("/getUser", verify, async (req, res) => {
 
     if (!data.job)
         delete data.job;
-
-    console.log(data);
 
     res.status(200).json({status: 200, data: data});
 });
