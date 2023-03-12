@@ -32,8 +32,8 @@ console.log("████████▄     ▄████████     █
     "███    ███   ███    ███     ███       ███    ███   ███    ██▄   ███    ███          ███   ███    █▄  \n" +
     "███   ▄███   ███    ███     ███       ███    ███   ███    ███   ███    ███    ▄█    ███   ███    ███ \n" +
     "████████▀    ███    █▀     ▄████▀     ███    █▀  ▄█████████▀    ███    █▀   ▄████████▀    ██████████ \n" +
-    "                                                                                                     ");
-console.log("\nDesigned by: Noah Elijah Till\nand the weebskingdom team\n-------------------------------------------------------------------------\n\n")
+    "                                                                                                     \n\n" +
+    "\nDesigned by: Noah Elijah Till\nand the weebskingdom team\n-------------------------------------------------------------------------\n\n")
 
 var methodOverride = require('method-override')
 
