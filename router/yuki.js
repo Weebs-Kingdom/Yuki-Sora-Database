@@ -44,7 +44,7 @@ router.use(yukir({route: "user-job", module: UserJob}));
 router.use(yukir({route: "yukiTask", module: Task}));
 router.use(yukir({route: "server-user", module: ServerUser}));
 
-router.get("/findTwitchUsersByServer", verify, async (req, res) => {
+router.post("/findTwitchUsersByServer", verify, async (req, res) => {
     const su = await TwitchUserCon.find({server: {$in: req.body.servers}});
     var tww = su.toJSON();
 
