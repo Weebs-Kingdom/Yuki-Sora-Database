@@ -26,6 +26,7 @@ const UserJob = require("../models/User/UserJob");
 const Vote = require("../models/Server/Vote/Vote");
 const VoteElement = require("../models/Server/Vote/VoteElement");
 const Task = require("../models/YukiTasks/Task");
+const ServerUser = require("../models/User/ServerUser");
 
 //middleware
 const verify = require("../middleware/verifyApiToken");
@@ -41,8 +42,37 @@ router.use(yukir({route: "vote-element", module: VoteElement}));
 router.use(yukir({route: "job", module: Job}));
 router.use(yukir({route: "user-job", module: UserJob}));
 router.use(yukir({route: "yukiTask", module: Task}));
+router.use(yukir({route: "server-user", module: ServerUser}));
 
+router.get("/findTwitchUsersByServer", verify, async (req, res) => {
+    const server = await DiscServer.findOne({_id: req.body.id});
+    if(!server) return res.status(200).json({status: 400, message: "Server not found!", data: []});
+    const su = await TwitchUserCon.find({server: server._id});
+    var tww = su.toJSON();
 
+    res.status(200).json({status: 200, message: "Found data!", data: tww});
+});
+
+router.post("/findServerUsersByUser", verify, async (req, res) => {
+    const user = await getUser(req.body);
+    if (!user) return res.status(200).json({status: 400, message: "User not found!", data: []});
+    const su = await ServerUser.find({user: user._id});
+    if (!su) return res.status(200).json({status: 400, message: "Server user not found!", data: []});
+    var tww = su.toJSON();
+
+    res.status(200).json({status: 200, message: "Found data!", data: tww});
+});
+router.post("/findServerUserByUserAServer", verify, async (req, res) => {
+    const user = await getUser(req.body);
+    if (!user) return res.status(200).json({status: 400, message: "User not found!", data: []});
+    const server = await DiscServer.findOne({_id: req.body.server});
+    if(!server) return res.status(200).json({status: 400, message: "Server not found!", data: []});
+    const su = await ServerUser.findOne({user: user._id, server: server._id});
+    if (!su) return res.status(200).json({status: 400, message: "Server user not found!", data: []});
+    var tww = su.toJSON();
+
+    res.status(200).json({status: 200, message: "Found data!", data: tww});
+});
 
 router.post("/findVoteElementsByVote", verify, async (req, res) => {
     const id = req.body.vote;
