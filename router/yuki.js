@@ -45,9 +45,7 @@ router.use(yukir({route: "yukiTask", module: Task}));
 router.use(yukir({route: "server-user", module: ServerUser}));
 
 router.get("/findTwitchUsersByServer", verify, async (req, res) => {
-    const server = await DiscServer.findOne({_id: req.body.id});
-    if(!server) return res.status(200).json({status: 400, message: "Server not found!", data: []});
-    const su = await TwitchUserCon.find({server: server._id});
+    const su = await TwitchUserCon.find({server: {$in: req.body.servers}});
     var tww = su.toJSON();
 
     res.status(200).json({status: 200, message: "Found data!", data: tww});
