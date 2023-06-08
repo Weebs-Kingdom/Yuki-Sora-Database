@@ -44,27 +44,26 @@ router.use(yukir({route: "user-job", module: UserJob}));
 router.use(yukir({route: "yukiTask", module: Task}));
 router.use(yukir({route: "server-user", module: ServerUser}));
 
-router.post("/findTwitchUsersByServer", verify, async (req, res) => {
-    const su = await TwitchUserCon.find({servers: {"$in": [req.body.server]}});
-    var tww = su.toJSON();
-
-    res.status(200).json({status: 200, message: "Found data!", data: tww});
-});
-
 router.post("/findServerUsersByUser", verify, async (req, res) => {
     const user = await getUser(req.body);
     if (!user) return res.status(200).json({status: 400, message: "User not found!", data: []});
     const su = await ServerUser.find({user: user._id});
     if (!su) return res.status(200).json({status: 400, message: "Server user not found!", data: []});
-    var tww = su.toJSON();
 
-    res.status(200).json({status: 200, message: "Found data!", data: tww});
+    res.status(200).json({status: 200, message: "Found data!", data: su});
 });
+
+router.post("/findTwitchUsersByServer", verify, async (req, res) => {
+    const su = await TwitchUserCon.find({servers: req.body.id});
+
+    res.status(200).json({status: 200, message: "Found data!", data: su});
+});
+
 router.post("/findServerUserByUserAServer", verify, async (req, res) => {
     const user = await getUser(req.body);
     if (!user) return res.status(200).json({status: 400, message: "User not found!", data: []});
     const server = await DiscServer.findOne({_id: req.body.server});
-    if(!server) return res.status(200).json({status: 400, message: "Server not found!", data: []});
+    if (!server) return res.status(200).json({status: 400, message: "Server not found!", data: []});
     const su = await ServerUser.findOne({user: user._id, server: server._id});
     if (!su) return res.status(200).json({status: 400, message: "Server user not found!", data: []});
     var tww = su.toJSON();
