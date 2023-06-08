@@ -196,8 +196,6 @@ router.post("/findTwitchUserConByUser", verify, async (req, res) => {
     if (!tw) return res.status(200).json({status: 400, message: "Con not found!", data: []});
     var tww = tw.toJSON();
 
-    tww.user = user.userID;
-
     res.status(200).json({status: 200, message: "Found data!", data: tww});
 });
 
