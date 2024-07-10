@@ -6,4 +6,8 @@ router.use('/api/yuki', api);
 
 router.use('/yuki-api', yuki);
 
+router.get('/', async (req, res) => {
+    res.status(200).send({})
+})
+
 module.exports = router;
